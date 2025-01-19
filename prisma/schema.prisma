@@ -1,0 +1,55 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model User{
+  id            String        @id   @default(auto())  @map("_id")   @db.ObjectId
+  name          String
+  kerbrosId     String        @unique
+  password      String        
+  hostel        Hostels      
+  doubts        Doubts[]
+}
+
+model Doubts{
+  id            String        @id       @default(auto())  @map("_id") @db.ObjectId
+  userId        String        @db.ObjectId
+  course        String
+  text          String  
+  upvotes       Int
+  downVotes     Int      
+  status        status       
+  imageUrl      String?
+  replies       Replies[]
+  user          User          @relation(fields: [userId],references: [id])
+}
+
+model Replies{
+  id            String        @id   @default(auto()) @map("_id") @db.ObjectId
+  userId        String        @db.ObjectId
+  replyText     String        
+  imageUrl      String
+  upVotes       Int
+  downVotes     Int
+  doubtId       String        @db.ObjectId
+  doubt         Doubts        @relation(fields: [doubtId],references: [id])
+}
+
+enum status{
+  Resolved
+  Pending
+}
+
+enum Hostels{
+  Aravali
+  Jwalamukhi
+  Nilgiri
+  Karakoram
+}
