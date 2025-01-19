@@ -14,7 +14,8 @@ model User{
   name          String
   kerbrosId     String        @unique
   password      String        
-  hostel        Hostels      
+  hostel        Hostels   
+  role          String        @default("user")   
   doubts        Doubts[]
 }
 
@@ -28,6 +29,9 @@ model Doubts{
   status        status       
   imageUrl      String?
   replies       Replies[]
+  mentorId      String        @db.ObjectId
+
+  mentor        Mentor        @relation(fields: [mentorId],references: [id])
   user          User          @relation(fields: [userId],references: [id])
 }
 
@@ -40,6 +44,22 @@ model Replies{
   downVotes     Int
   doubtId       String        @db.ObjectId
   doubt         Doubts        @relation(fields: [doubtId],references: [id])
+}
+
+model Mentor{
+  id          String          @id       @default(auto())  @map("_id")  @db.ObjectId
+  name        String
+  contact     Int
+  hours       Int             //Store in minutes
+  kerbros     String
+  email       String
+  doubts      Doubts[]
+}
+
+model Otps{
+  id          String            @db.ObjectId @id @default(auto()) @map("_id")
+  email       String
+  OTP         Int
 }
 
 enum status{
