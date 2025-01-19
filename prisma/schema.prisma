@@ -16,6 +16,7 @@ model User{
   password      String        
   hostel        Hostels   
   role          String        @default("user")   
+
   doubts        Doubts[]
 }
 
@@ -24,8 +25,6 @@ model Doubts{
   userId        String        @db.ObjectId
   course        String
   text          String  
-  upvotes       Int
-  downVotes     Int      
   status        status       
   imageUrl      String?
   replies       Replies[]
@@ -53,13 +52,27 @@ model Mentor{
   hours       Int             //Store in minutes
   kerbros     String
   email       String
+
   doubts      Doubts[]
+  Sessions    session[]
 }
 
 model Otps{
   id          String            @db.ObjectId @id @default(auto()) @map("_id")
-  email       String
+  email       String            @unique
   OTP         Int
+  dateCreated DateTime          @default(now())
+}
+
+model session{
+  id          String          @id  @default(auto()) @map("_id") @db.ObjectId
+  course      String
+  mentorId    String          @db.ObjectId
+  startTime   DateTime        @default(now())
+  endTime     DateTime        
+  joinLink    String
+  
+  mentor      Mentor          @relation(fields: [mentorId],references: [id])
 }
 
 enum status{

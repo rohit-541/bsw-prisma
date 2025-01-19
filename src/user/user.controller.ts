@@ -1,32 +1,74 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { EmailVerify } from './user.validation';
+import { BadRequestException, Body, Controller, Get, Post, Res, UsePipes, ValidationPipe } from '@nestjs/common';
+import { emailDTO, otpDTO, Responsewithcookie } from './user.validation';
 import { MailService } from 'Mail/SendMail';
+import { UserService } from './user.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('user')
+@UsePipes(new ValidationPipe())
 export class UserController {
 
-    constructor(private mailService:MailService){}
+    constructor(private userService:UserService,
+        private jwtService:JwtService
+    ){}
 
-    //Get Mail
-    @Post('/email')
-    async getMail(@Body('kerbrosId') kerbrosId:EmailVerify){
-        const email = kerbrosId+"@iitd.ac.in";
+    //Get otp on Email
+    @Get('/email')
+    async getOtp(@Body() data:emailDTO){
+        const email:string = data.kerbros+"@iitd.ac.in";
         try {
-            await this.mailService.sendMail(email,"Testing","Hey i am Testing");
+            const result = await this.userService.getOTP(email);
+            console.log("Request reached here")
+            return {
+                success:true,
+                message:"OTP sent successfully"
+            }
         } catch (error) {
             console.log(error);
         }
     }
-    //registerUser
+    
+    async verifyOtp(@Body() data:otpDTO,@Res() res:Responsewithcookie){
+        const otp = Number(data.otp);
+        const email = data.kerbros+"@iitd.ac.in";
+        if(!otp){
+            throw new BadRequestException("Invalid OTP");
+        }
 
-    //loginUser
+        try {
+            await this.userService.verifyOTP(email,otp);
+            //If successfull insert the token into cookies
+            const token = this.jwtService.sign({
+                email:email
+            },{
+                secret:process.env.SECRET_KEY||"Yourkey"
+            });
 
-    //logoutUser
+            res.cookie('access_token', token, {
+                httpOnly: true, // Make the cookie inaccessible to JavaScript
+                secure: process.env.NODE_ENV === 'production', // Use secure cookies in production (HTTPS)
+                maxAge: 3600000, // 1 hour expiration time
+              });
 
-    //updateDetails 
+            return {
+                success:true,
+                token:token
+            }
+        } catch (error) {
+            
+        }
+    }
 
-    //deleteUser
+    //Verify otp
 
-    //reportUser
+    //Register User
+
+    //login user
+
+    //update user details
+
+    //delete user
+
+    //get user details
 
 }
