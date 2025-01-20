@@ -1,10 +1,12 @@
-import { BadRequestException, Body, Controller, Get, Post, Res, UsePipes, ValidationPipe } from '@nestjs/common';
-import { emailDTO, otpDTO, Responsewithcookie } from './user.validation';
+import { BadRequestException, Body, Controller, Get, HttpException, InternalServerErrorException, Post, Req, Res, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { emailDTO, otpDTO, userDTO } from './user.validation';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
+import { emailGaurd } from 'src/auth/auth.service';
+import { Response } from 'express';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Controller('user')
-@UsePipes(new ValidationPipe())
 export class UserController {
 
     constructor(private userService:UserService,
@@ -12,15 +14,89 @@ export class UserController {
     ){}
 
     //sendOTP
-
-    //delete expired
-
-    //Verify otp
+    @Post('/verifyEmail')
+    async sendOTP(@Body(new ValidationPipe({whitelist:true})) data:emailDTO){
+        console.log("Reached here");
+        const email = data.kerbros+"@iitd.ac.in";
+        try {
+            this.userService.sendOTP(email);
+            return {
+                success:true,
+                message:"OTP Sent successfully"
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    @Post('/verifyOTP')
+    async verifyOTP(
+      @Body(new ValidationPipe({ whitelist: true })) data: otpDTO,
+      @Res() res: Response
+    ) {
+      const email = data.kerbros + "@iitd.ac.in";
+      const otp = Number(data.otp);
+    
+      try {
+        const result = await this.userService.verifyOTP(email, otp);
+    
+        if (!result) {
+          throw new UnauthorizedException('Incorrect or expired OTP');
+        }
+    
+        const token = this.jwtService.sign(
+          { email: data.kerbros },
+          {
+            secret: process.env.SECRET_KEY,
+            expiresIn: '1h'  // Optional: Set expiration for the token
+          }
+        );
+    
+        // Embed token in HTTP-only cookie
+        res.cookie('token', token, {
+          httpOnly: true,   // Corrected to lowercase
+          secure: false,    // Set to `true` in production with HTTPS
+          maxAge: 3600000,  // 1 hour
+          sameSite: 'strict'
+        });
+    
+        return res.status(200).json({ message: 'OTP verified successfully' });
+    
+      } catch (error) {
+        if (error instanceof HttpException) {
+          throw error;
+        }
+        throw new InternalServerErrorException('Something went wrong');
+      }
+    }
+    
 
     //Register User
+    @Post('/register')
+    @UseGuards(emailGaurd)
+    async registerUser(@Body(new ValidationPipe({whitelist:true})) data:userDTO,@Req() req:any){
+        try {
+            const email = req.email;
+            console.log(email);
+            const result = await this.userService.registerUser(data,email);
+            return {
+                success:true,
+                user:result
+            }
+        } catch (error) {
+
+            if(error instanceof PrismaClientKnownRequestError){
+                if(error.code == "P2002"){
+                    throw new BadRequestException("User already exists");
+                }
+            }
+
+            throw new InternalServerErrorException("Something went wrong!");
+        }
+    }
 
     //login user
-
+    
     //update user details
 
     //delete user

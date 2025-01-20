@@ -11,7 +11,7 @@ export class MailService {
             pass:process.env.email_password
         }
     });
-
+    
     sendMail(to:string,subject:string,text:string,htmlString?:string){
         this.transport.sendMail({
             from:process.env.email,
