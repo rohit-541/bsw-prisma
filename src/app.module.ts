@@ -6,9 +6,10 @@ import { UserModule } from './user/user.module';
 import { DoubtsModule } from './doubts/doubts.module';
 import { MentorModule } from './mentor/mentor.module';
 import { AuthModule } from './auth/auth.module';
-import { MailService } from 'Mail/SendMail';
 import { SessionsModule } from './sessions/sessions.module';
 import { JwtModule } from '@nestjs/jwt';
+import { PrismaModule } from './prisma/prisma.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [UserModule, DoubtsModule, MentorModule, AuthModule, SessionsModule,JwtModule.register({
@@ -16,6 +17,6 @@ import { JwtModule } from '@nestjs/jwt';
     secret:process.env.SECRET_KEY||"yourkey"
   })],
   controllers: [AppController],
-  providers: [AppService,MailService],
+  providers: [AppService],
 })
 export class AppModule {}

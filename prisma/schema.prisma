@@ -8,7 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
+//Store general User
 model User{
   id            String        @id   @default(auto())  @map("_id")   @db.ObjectId
   name          String
@@ -61,7 +61,8 @@ model Otps{
   id          String            @db.ObjectId @id @default(auto()) @map("_id")
   email       String            @unique
   OTP         Int
-  dateCreated DateTime          @default(now())
+  expiresAt   DateTime         
+  createdAt   DateTime          @default(now())
 }
 
 model session{
