@@ -12,7 +12,7 @@ export class MailService {
         }
     });
     
-    sendMail(to:string,subject:string,text:string,htmlString?:string){
+    async sendMail(to:string,subject:string,text:string,htmlString?:string){
         this.transport.sendMail({
             from:process.env.email,
             to:to,

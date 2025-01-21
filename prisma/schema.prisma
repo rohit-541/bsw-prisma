@@ -55,6 +55,7 @@ model Mentor{
   email       String
   password    String
   course      String           
+  tokens      String[]
 
   doubts      Doubts[]
   Sessions    session[]

@@ -45,6 +45,43 @@ export class AuthGaurd implements CanActivate{
     }
 }
 
+//AuthGaurd
+export class MentorAuthGaurd implements CanActivate{
+
+    constructor(@Inject(JwtService) private readonly jwtService: JwtService,@Inject(PrismaService) private readonly databaseService: PrismaService
+){}
+
+    async canActivate(context: ExecutionContext):Promise<boolean>{
+        const request = context.switchToHttp().getRequest();
+
+        const token = request.cookies['loginToken'];
+        if(!token){
+            throw new UnauthorizedException("Invalid or missing token");
+        }
+
+        const payload = await this.jwtService.verifyAsync(token,{
+            secret:process.env.SECRET_KEY
+        });
+
+        const result = await this.databaseService.mentor.findUnique({
+            where:{
+                kerbros:payload.kerbros,
+                tokens:{
+                    has:token
+                }
+            }
+        });
+
+        if(!result){
+            throw new NotFoundException("User not found");
+        }
+        
+        request.user = result;
+
+        return true;
+    }
+}
+
 //Email Verification
 export class emailGaurd implements CanActivate{
     constructor(@Inject(JwtService) private readonly jwtService: JwtService,@Inject(PrismaService) private readonly databaseService: PrismaService

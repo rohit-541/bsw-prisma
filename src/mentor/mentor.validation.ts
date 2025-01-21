@@ -23,7 +23,6 @@ export class mentorDTO{
     kerbros: string; // Specify 'string' as the type
 
     @IsEmail()
-    @IsOptional()
     @IsString()
     email:string
     
@@ -54,8 +53,7 @@ export class UpdateMentorDTO{
   email:string
 
   @IsNumber()
-  @Min(0)
-  @Length(10)
+  @IsOptional()
   contact:number
 }
 
@@ -67,7 +65,14 @@ export class time{
 }
 
 export class id{
-  @Length(24)
-  @IsString()
   id:string
+}
+
+export class passDTO{
+  @IsNotEmpty()
+  @Length(9, 9)
+  @Matches(/^[a-z]{2}\d{7}$/, {
+  message: 'Kerberos should be of the form aa000000',
+  })
+  kerbros: string; // Specify 'string' as the type
 }

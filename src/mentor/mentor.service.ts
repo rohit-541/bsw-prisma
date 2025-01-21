@@ -1,18 +1,23 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from 'src/prisma/prisma.service';
-import { id } from './mentor.validation';
+import otpGenerator from 'otp-generator'
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class MentorService {
 
-    constructor(@Inject()private readonly prisma:PrismaService){}
+    constructor(@Inject()private readonly prisma:PrismaService,
+                private readonly mail:MailService
+){}
 
     //create mentor
     async createMentor(data:any){
         const hashedPassword = await bcrypt.hash(data.password,12);
         data.password = hashedPassword;
-        const result = await this.prisma.mentor.create(data);
+        const result = await this.prisma.mentor.create({
+            data:data
+        });
         return result;
     }
 
@@ -35,6 +40,37 @@ export class MentorService {
         return result;
     }
 
+    async loginUser(kerbros:string,password:string){
+
+        const user = await this.prisma.mentor.findUnique({
+            where:{
+                kerbros:kerbros
+            }
+        });
+
+        if(!user){
+            throw new NotFoundException("User not found!");
+        }
+
+        return await bcrypt.compare(password,user.password);
+    }
+
+    //addToken to user 
+    async addToken(token:string,userId:string){
+        const result = await this.prisma.mentor.update({
+            where:{
+                kerbros:userId
+            },
+            data:{
+                tokens:{
+                    push:token
+                }
+            }
+        });
+
+        return true;
+    }
+
     //delete mentor
     async deleteMentor(mentorId:any){
         await this.prisma.mentor.delete({
@@ -43,6 +79,40 @@ export class MentorService {
             }
         });
     }
+
+        
+    //remove a token
+    async removeToken(kerbros:string,token:string){
+        await this.prisma.mentor.updateMany({
+            where: { kerbros: kerbros },
+            data: {
+              tokens: {
+                set: (await this.prisma.mentor.findUnique({
+                  where: { kerbros: kerbros },
+                  select: { tokens: true },
+                })).tokens.filter(item => item !== token),
+              },
+            },
+          });
+
+          return true;
+    }
+
+    //logoutall
+    async removeallTokens(kerbros:string){
+        const result = await this.prisma.mentor.update({
+            where:{
+                kerbros:kerbros
+            },
+            data:{
+                tokens:{
+                    set:[]
+                }
+            }
+        });
+        return true;
+    }
+
 
     //Add hours 
     //Time must be provided in minutes
@@ -120,4 +190,80 @@ export class MentorService {
 
         return result;
     }
+
+    //send otp
+    async sendOTP(kerbros:string){
+        //check if mentor with this mentor exists
+        const result = await this.prisma.mentor.findUnique({
+            where:{
+                kerbros:kerbros
+            }
+        });
+
+        if(!result){
+            throw new NotFoundException("User not found");
+        }
+
+        const otp:number = Number(otpGenerator.generate(4,{
+            lowerCaseAlphabets:false,
+            upperCaseAlphabets:false,
+            specialChars:false
+        }));
+        try {
+            this.mail.sendMail(kerbros+"@iitd.ac.in","OTP:Password Reset",`Here is your OTP: ${otp}.Do Not Share.`);
+        } catch (error) {
+            throw new InternalServerErrorException("Something wrong with mailing service.");
+        }    
+        //Create dates
+         const dateStart = new Date(Date.now() + 5.5*60*60*1000);
+         const dateEnd = new Date(Date.now() + 5.5*60*60*1000 +5*60*1000);   //Expiry after 5 minutes
+ 
+        await this.prisma.otps.upsert({
+             where:{
+                 email:kerbros+"@iitd.ac.in"
+             },
+             create:{
+                 OTP:otp,
+                 email:kerbros+"@iitd.ac.in",
+                 createdAt:dateStart,
+                 expiresAt:dateEnd,
+             },
+             update:{
+                 OTP:otp,
+                 createdAt:dateStart,
+                 expiresAt:dateEnd
+             }
+         });
+    }
+
+    //verifyOTP and give registeration token
+    async verifyOTP(email:string,otp:number){
+        const result = await this.prisma.otps.findUnique({
+            where:{
+                email:email,
+                OTP:otp,
+                expiresAt:{
+                    gte:new Date(Date.now() + 5.5*60*60*1000)
+                }
+            },
+        });
+
+        return result;
+    }
+
+     //forgot password 
+    async setNewPassword(kerbros:string,password:string){
+        const hashedPassword = await bcrypt.hash(password,12);
+        await this.prisma.user.update({
+            where:{
+                kerbrosId:kerbros
+            },
+            data:{
+                password:hashedPassword
+            }
+        });
+        await this.mail.sendMail(`${kerbros}@iitd.ac.in`,"BSW:AcadmentorShip","Your password has been reset.If not you please update your password and revoke any email access.");
+        return true;
+    }
+    
 }
