@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, CanActivate, ExecutionContext, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'PrismaService';
 import { Observable } from 'rxjs';
@@ -10,7 +10,37 @@ export class AuthService {
 
 //AuthGaurd
 export class AuthGaurd implements CanActivate{
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+
+    constructor(@Inject(JwtService) private readonly jwtService: JwtService,@Inject(PrismaService) private readonly databaseService: PrismaService
+){}
+
+    async canActivate(context: ExecutionContext):Promise<boolean>{
+        const request = context.switchToHttp().getRequest();
+
+        const token = request.cookies['loginToken'];
+        if(!token){
+            throw new UnauthorizedException("Invalid or missing token");
+        }
+
+        const payload = await this.jwtService.verifyAsync(token,{
+            secret:process.env.SECRET_KEY
+        });
+
+        const result = await this.databaseService.user.findUnique({
+            where:{
+                kerbrosId:payload.kerbros,
+                tokens:{
+                    has:token
+                }
+            }
+        });
+
+        if(!result){
+            throw new NotFoundException("User not found");
+        }
+        
+        request.user = result;
+
         return true;
     }
 }

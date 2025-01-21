@@ -16,6 +16,7 @@ model User{
   password      String        
   hostel        Hostels   
   role          String        @default("user")   
+  tokens        String[]      //Login from multiple device
 
   doubts        Doubts[]
 }

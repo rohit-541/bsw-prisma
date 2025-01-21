@@ -1,8 +1,8 @@
-import { BadRequestException, Body, Controller, Get, HttpException, InternalServerErrorException, Post, Req, Res, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
-import { emailDTO, otpDTO, userDTO } from './user.validation';
+import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, Post, Req, Res, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { emailDTO, loginDTO, otpDTO, userDTO } from './user.validation';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
-import { emailGaurd } from 'src/auth/auth.service';
+import { AuthGaurd, emailGaurd } from 'src/auth/auth.service';
 import { Response } from 'express';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
@@ -96,11 +96,114 @@ export class UserController {
     }
 
     //login user
+    @Post('/login')
+    async loginUser(@Body(new ValidationPipe()) data:loginDTO,@Res() res:any){
+      try {
+        const result = await this.userService.loginUser(data.kerbrosId,data.password);
+        if(!result){
+          throw new UnauthorizedException("Invalid Credentials");
+        }
+
+        //User is verified
+        const token = this.jwtService.sign({
+          kerbros:data.kerbrosId
+        },{
+          secret:process.env.SECRET_KEY
+        });
+        
+        //Add token to user list
+        await this.userService.addToken(token,data.kerbrosId);
+            
+        // Embed token in HTTP-only cookie
+        res.cookie('loginToken', token, {
+          httpOnly: true,   // Corrected to lowercase
+          secure: false,    // Set to `true` in production with HTTPS
+          maxAge: 3600000,  // 1 hour
+          sameSite: 'strict'
+        });
     
+        return res.status(200).json({ message: 'Login successfully' });
+      
+      } catch (error) {
+        if(error instanceof UnauthorizedException){
+          throw error;
+        }
+        throw new InternalServerErrorException("Something went wrong!");
+      }
+    }
+
     //update user details
-
+    
     //delete user
+    @Delete('/:id')
+    @UseGuards(AuthGaurd)
+    async deleteUser(@Param('id') id:string,@Req() req:any){
+      try {
+        const result = await this.userService.deleteUser(id,req.user.kerbrosId);
+        return{
+          success:true,
+          message:"User deleted Successfully"
+        }
+      } catch (error) {
+        if(error instanceof PrismaClientKnownRequestError){
+          if(error.code == "P2025"){
+            throw new NotFoundException("No User found");
+          }
 
+          if(error.code == "P2023"){
+            throw new BadRequestException("Invalid Id Provided");
+          }
+        }
+
+        throw new InternalServerErrorException("Something went wrong");
+      }
+    }
+   
+    @Post('/logout/')
+    @UseGuards(AuthGaurd)
+    async logout(@Req() req: any, @Res() res: any) {
+      const token = req.cookies['loginToken'];
+      
+      if(!token){
+        res.status(200).send("Logged out successfully");
+      }
+      try {
+         //check delete this token
+        const result = await this.userService.removeToken(req.user.kerbrosId,token);
+      
+      
+        res.clearCookie('loginToken', {
+          httpOnly: true,  // Corrected capitalization
+          secure: false,   // Set to `true` in production with HTTPS
+          sameSite: 'strict',
+        });
+      
+        return res.status(200).json({ message: 'Logout successful' });
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException("Something went wrong");
+      }
+    }
+    
+    @Post('/logoutall')
+    @UseGuards(AuthGaurd)
+    async logoutall(@Res() res:any,@Req() req:any){
+
+      try {
+        await this.userService.removeallTokens(req.user.kerbrosId);
+        res.clearCookie('loginToken', {
+          httpOnly: true,  // Corrected capitalization
+          secure: false,   // Set to `true` in production with HTTPS
+          sameSite: 'strict',
+        });
+    
+      return res.status(200).json({ message: 'Logout successful' });
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException("Something went wrong");
+      }
+    }
+    
     //get user details
 
 }

@@ -53,3 +53,15 @@ export type Responsewithcookie={
   ,Response:Response
 };
 
+
+export class loginDTO{
+  @IsNotEmpty()
+  @Length(9, 9)
+  @Matches(/^[a-z]{2}\d{7}$/, {
+    message: 'Kerberos should be of the form aa000000',
+  })
+  kerbrosId:string
+
+  @IsNotEmpty()
+  password:string
+}

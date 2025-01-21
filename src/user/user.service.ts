@@ -87,13 +87,78 @@ export class UserService {
         return result;
     }
 
-    //Should have verification token
-
     //login user
+    async loginUser(kerbrosId:string,password:string){
+        const result = await this.prisma.user.findUnique({
+            where:{
+                kerbrosId:kerbrosId,
+                password:password
+            }
+        });
 
-    //update user details
+        return result;
+    }
+
+    //addToken to user 
+    async addToken(token:string,userId:string){
+        const result = await this.prisma.user.update({
+            where:{
+                kerbrosId:userId
+            },
+            data:{
+                tokens:{
+                    push:token
+                }
+            }
+        });
+
+        return true;
+    }
+
 
     //delete user
+    async deleteUser(userId:string,kerbros:string){
+        const result = await this.prisma.user.delete({
+            where:{
+                id:userId,
+                kerbrosId:kerbros
+            }
+        });
+        
+        return result;
+    }
+    
+    //remove a token
+    async removeToken(kerbros:string,token:string){
+        await this.prisma.user.updateMany({
+            where: { kerbrosId: kerbros },
+            data: {
+              tokens: {
+                set: (await this.prisma.user.findUnique({
+                  where: { kerbrosId: kerbros },
+                  select: { tokens: true },
+                })).tokens.filter(item => item !== token),
+              },
+            },
+          });
+
+          return true;
+    }
+    
+    //logoutall
+    async removeallTokens(kerbros:string){
+        const result = await this.prisma.user.update({
+            where:{
+                kerbrosId:kerbros
+            },
+            data:{
+                tokens:{
+                    set:[]
+                }
+            }
+        });
+        return true;
+    }
 
     //getDetails
     
