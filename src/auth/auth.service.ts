@@ -63,7 +63,7 @@ export class emailGaurd implements CanActivate{
         //verify email exists
         const result = await this.databaseService.otps.findUnique({
             where:{
-                email:payload.email+"@iitd.ac.in"
+                email:payload.email+"@iitd.ac.in",
             }
         });
 

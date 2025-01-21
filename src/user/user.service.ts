@@ -2,7 +2,7 @@ import {Injectable } from '@nestjs/common';
 import { PrismaService } from 'PrismaService';
 import { MailService } from 'src/mail/mail.service';
 import * as otpGenrator from 'otp-generator'
-
+import * as bcrypt from 'bcrypt'
 @Injectable()
 export class UserService {
 
@@ -77,6 +77,8 @@ export class UserService {
 
     //Register User
     async registerUser(data:any,email:string){
+        const hashedPassword = await bcrypt.hash(data.password,12);
+        data.password = hashedPassword;
         const result = await this.prisma.user.create({
             data:{
                 kerbrosId:email,
@@ -92,11 +94,10 @@ export class UserService {
         const result = await this.prisma.user.findUnique({
             where:{
                 kerbrosId:kerbrosId,
-                password:password
             }
         });
 
-        return result;
+        return await bcrypt.compare(password,result.password);
     }
 
     //addToken to user 
@@ -117,10 +118,9 @@ export class UserService {
 
 
     //delete user
-    async deleteUser(userId:string,kerbros:string){
+    async deleteUser(kerbros:string){
         const result = await this.prisma.user.delete({
             where:{
-                id:userId,
                 kerbrosId:kerbros
             }
         });
@@ -161,7 +161,55 @@ export class UserService {
     }
 
     //getDetails
-    
-    //forgot password 
+    async userDetails(userId:string){
+        const result = await this.prisma.user.findUnique({
+            where:{
+                id:userId
+            },
+            select:{
+                name:true,
+                kerbrosId:true,
+                hostel:true,
+            }
+        });
 
+        return result;
+    }
+    
+    //Update details
+    async updateUser(kerbros:string,data:any){
+        const result = await this.prisma.user.update({
+            where:{
+                kerbrosId:kerbros
+            },
+            data:data,
+            select:{
+                id:true,
+                kerbrosId:true,
+                name:true,
+                hostel:true
+            }
+        });
+
+        return result;
+    }
+
+    //forgot password 
+    async setNewPassword(kerbros:string,password:string){
+        const hashedPassword = await bcrypt.hash(password,12);
+        await this.prisma.user.update({
+            where:{
+                kerbrosId:kerbros
+            },
+            data:{
+                password:hashedPassword
+            }
+        });
+        return true;
+    }
+
+    //Update role of user
+    async updateRole(kerbros:string,newRole:string){
+        
+    }
 }

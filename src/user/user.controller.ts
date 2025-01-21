@@ -1,22 +1,24 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, Post, Req, Res, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
-import { emailDTO, loginDTO, otpDTO, userDTO } from './user.validation';
+import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, Res, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { emailDTO, loginDTO, otpDTO, passdto, updateDTO, userDTO } from './user.validation';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGaurd, emailGaurd } from 'src/auth/auth.service';
 import { Response } from 'express';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { MailService } from 'src/mail/mail.service';
 
 @Controller('user')
 export class UserController {
 
     constructor(private userService:UserService,
-        private jwtService:JwtService
+        private jwtService:JwtService,
+        private mailService:MailService
     ){}
 
     //sendOTP
     @Post('/verifyEmail')
+    @Post('/resetPassword')
     async sendOTP(@Body(new ValidationPipe({whitelist:true})) data:emailDTO){
-        console.log("Reached here");
         const email = data.kerbros+"@iitd.ac.in";
         try {
             this.userService.sendOTP(email);
@@ -70,6 +72,21 @@ export class UserController {
       }
     }
     
+    @Post('/setNew')
+    @UseGuards(emailGaurd,AuthGaurd)
+    async setNew(@Body(new ValidationPipe({whitelist:true})) password:passdto,@Req() req:any){
+      try { 
+        await this.userService.setNewPassword(req.user.kerbrosId,password.password);
+        await this.mailService.sendMail(`${req.user.kerbrosId}@iitd.ac.in`,"BSW:AcadmentorShip","Your password has been reset.If not you please update your password and revoke any email access.");
+        return {
+          success:true,
+          message:"Password updated successfully"
+        }
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException(error);
+      }
+    }
 
     //Register User
     @Post('/register')
@@ -77,7 +94,6 @@ export class UserController {
     async registerUser(@Body(new ValidationPipe({whitelist:true})) data:userDTO,@Req() req:any){
         try {
             const email = req.email;
-            console.log(email);
             const result = await this.userService.registerUser(data,email);
             return {
                 success:true,
@@ -135,11 +151,11 @@ export class UserController {
     //update user details
     
     //delete user
-    @Delete('/:id')
+    @Delete('/')
     @UseGuards(AuthGaurd)
-    async deleteUser(@Param('id') id:string,@Req() req:any){
+    async deleteUser(@Req() req:any){
       try {
-        const result = await this.userService.deleteUser(id,req.user.kerbrosId);
+        const result = await this.userService.deleteUser(req.user.kerbrosId);
         return{
           success:true,
           message:"User deleted Successfully"
@@ -205,5 +221,37 @@ export class UserController {
     }
     
     //get user details
+    @Get('/:id')
+    async userDetails(@Param('id') id:string){
+      try {
+        const result = await this.userService.userDetails(id);
+        return{
+          success:true,
+          user:result
+        }
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException("Something went wrong");
+      }
+    }
+
+    //Update user details
+    @Put('/')
+    @UseGuards(AuthGaurd)
+    async updateDetails(@Body(new ValidationPipe({whitelist:true})) data:updateDTO,@Req() req:any){
+      try {
+        console.log(req.user.kerbrosId);
+        const result = await this.userService.updateUser(req.user.kerbrosId,data);
+        return {
+          success:true,
+          message:"Updated Successfully",
+          user:result
+        }
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException("Something went wrong");
+      }
+    }
+
 
 }

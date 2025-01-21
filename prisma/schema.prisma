@@ -88,3 +88,10 @@ enum Hostels{
   Nilgiri
   Karakoram
 }
+
+enum Role{
+  admin
+  user
+  superadmin
+  mentor
+}

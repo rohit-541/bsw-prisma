@@ -1,5 +1,5 @@
 import { Hostels } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsNumber, IsString, Length, Matches, Min, MinLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches, Min, MinLength } from 'class-validator';
 import { Response } from 'supertest';
 
 export class emailDTO {
@@ -46,7 +46,26 @@ export class userDTO{
 
 }
 
+export class updateDTO{
+  @IsOptional()
+  @IsString()
+  @Length(3)
+  name:string
+  
+  @IsOptional()
+  @IsEnum(Hostels)
+  hostel:string
+}
 
+export class passdto{
+  @IsNotEmpty()
+  @IsString()
+  @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{12,64}$/,{
+    message:"Password should be atleast 12 character string with one upperCase ,one lowerCase,one Digit and one specialCharacter"
+  })
+  password:string
+
+}
 
 export type Responsewithcookie={
   cookie:any
