@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { DoubtsModule } from './doubts/doubts.module';
 import { MentorModule } from './mentor/mentor.module';
@@ -15,7 +14,7 @@ import { MailModule } from './mail/mail.module';
   imports: [UserModule, DoubtsModule, MentorModule, AuthModule, SessionsModule,JwtModule.register({
     global:true,
     secret:process.env.SECRET_KEY||"yourkey"
-  })],
+  }),PrismaModule,MailModule],
   controllers: [AppController],
   providers: [AppService],
 })

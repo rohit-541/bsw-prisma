@@ -1,13 +1,13 @@
-import {Injectable } from '@nestjs/common';
-import { PrismaService } from 'PrismaService';
+import {Inject, Injectable } from '@nestjs/common';
 import { MailService } from 'src/mail/mail.service';
-import * as otpGenrator from 'otp-generator'
+import otpGenrator from 'otp-generator'
 import * as bcrypt from 'bcrypt'
+import { PrismaService } from 'src/prisma/prisma.service';
+
 @Injectable()
 export class UserService {
 
-    constructor(private prisma:PrismaService,
-                private mail:MailService){}
+    constructor(private prisma:PrismaService,private mail:MailService){}
 
     //sendOTP
     async sendOTP(email:string){

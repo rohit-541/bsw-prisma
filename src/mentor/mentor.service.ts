@@ -1,10 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt'
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class MentorService {
 
-    //create mentor
+    constructor(@Inject()private readonly prisma:PrismaService){}
 
+    //create mentor
+    async createMentor(data:any){
+        // const result = await
+    }
     //update mentor
 
     //delete mentor

@@ -50,7 +50,7 @@ model Mentor{
   id          String          @id       @default(auto())  @map("_id")  @db.ObjectId
   name        String
   contact     Int
-  hours       Int             //Store in minutes
+  hours       Int             @default(0)
   kerbros     String
   email       String
 

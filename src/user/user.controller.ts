@@ -31,6 +31,7 @@ export class UserController {
         }
     }
     
+    //Verify otp
     @Post('/verifyOTP')
     async verifyOTP(
       @Body(new ValidationPipe({ whitelist: true })) data: otpDTO,
@@ -72,6 +73,7 @@ export class UserController {
       }
     }
     
+    //Update the password
     @Post('/setNew')
     @UseGuards(emailGaurd,AuthGaurd)
     async setNew(@Body(new ValidationPipe({whitelist:true})) password:passdto,@Req() req:any){
@@ -147,8 +149,6 @@ export class UserController {
         throw new InternalServerErrorException("Something went wrong!");
       }
     }
-
-    //update user details
     
     //delete user
     @Delete('/')
@@ -174,7 +174,8 @@ export class UserController {
         throw new InternalServerErrorException("Something went wrong");
       }
     }
-   
+    
+    //logout from a device
     @Post('/logout/')
     @UseGuards(AuthGaurd)
     async logout(@Req() req: any, @Res() res: any) {
@@ -201,6 +202,7 @@ export class UserController {
       }
     }
     
+    //Logout from all device 
     @Post('/logoutall')
     @UseGuards(AuthGaurd)
     async logoutall(@Res() res:any,@Req() req:any){
