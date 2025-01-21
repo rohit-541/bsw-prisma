@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches, Min } from "class-validator"
+import { IsEmail, isHexadecimal, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches, Min } from "class-validator"
 
 export class mentorDTO{
     @IsNotEmpty()
@@ -33,4 +33,41 @@ export class mentorDTO{
       message:"Password should be atleast 12 character string with one upperCase ,one lowerCase,one Digit and one specialCharacter"
     })
     password:string
+
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^[a-z]{3}\d{3}$/,{
+      message:"course code must be of form aaa000"
+    })
+    course:string
+}
+
+export class UpdateMentorDTO{
+  @IsOptional()
+  @IsString()
+  @Length(3)
+  name:string
+
+  @IsEmail()
+  @IsOptional()
+  @IsString()
+  email:string
+
+  @IsNumber()
+  @Min(0)
+  @Length(10)
+  contact:number
+}
+
+export class time{
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  time:number
+}
+
+export class id{
+  @Length(24)
+  @IsString()
+  id:string
 }

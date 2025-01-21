@@ -51,8 +51,10 @@ model Mentor{
   name        String
   contact     Int
   hours       Int             @default(0)
-  kerbros     String
+  kerbros     String          @unique
   email       String
+  password    String
+  course      String           
 
   doubts      Doubts[]
   Sessions    session[]
