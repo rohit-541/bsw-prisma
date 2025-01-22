@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt'
 import { PrismaService } from 'src/prisma/prisma.service';
 import otpGenerator from 'otp-generator'
 import { MailService } from 'src/mail/mail.service';
+import { error } from 'console';
 
 @Injectable()
 export class MentorService {
@@ -73,11 +74,12 @@ export class MentorService {
 
     //delete mentor
     async deleteMentor(mentorId:any){
-        await this.prisma.mentor.delete({
+        const result = await this.prisma.mentor.delete({
             where:{
                 id:mentorId
             }
         });
+
     }
 
         

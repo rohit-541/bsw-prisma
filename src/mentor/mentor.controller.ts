@@ -141,6 +141,12 @@ export class MentorController {
                 message:"Mentor Deleted Successfully"
             }
         } catch (error) {
+            console.log("Yaha tak to pahunch gaya");
+            if(error instanceof PrismaClientKnownRequestError){
+                console.log(error.code);
+                return error;
+            }
+            return error;
             throw new InternalServerErrorException("Something went wrong");
         }
     }
