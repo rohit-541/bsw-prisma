@@ -5,6 +5,8 @@ import { AuthGaurd, emailGaurd, MentorAuthGaurd } from 'src/auth/auth.service';
 import { loginDTO, otpDTO, passdto } from 'src/user/user.validation';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { Roles, RolesGuard } from 'src/auth/role.gaurd';
+import { Role } from '@prisma/client';
 
 @Controller('mentor')
 export class MentorController {
@@ -15,6 +17,8 @@ export class MentorController {
 
     //create mentor
     @Post()
+    @Roles('admin','superadmin')
+    @UseGuards(AuthGaurd,RolesGuard)
     async createMentor(@Body(new ValidationPipe({whitelist:true})) data:mentorDTO){
         try {
             const result = await this.mentorService.createMentor(data);
@@ -23,8 +27,10 @@ export class MentorController {
                 user:result
             }
         } catch (error) {
-            if(error instanceof InternalServerErrorException){
-                throw new BadRequestException("User already exists");
+            if(error instanceof PrismaClientKnownRequestError){
+                if(error.code == "P2002"){
+                    throw new BadRequestException("User already exixts");
+                }
             }
             throw new InternalServerErrorException("Something went wrong");
         }
@@ -133,26 +139,40 @@ export class MentorController {
 
     //delete mentor
     @Delete('/:id')
-    async deleteMentor(@Param('id',new ValidationPipe({whitelist:true})) id:id){
+    @Roles('mentor','admin','superadmin')
+    @UseGuards(MentorAuthGaurd,RolesGuard)
+    async deleteMentor(@Param('id',new ValidationPipe({whitelist:true})) id:id,@Res() res:any){
         try {
             await this.mentorService.deleteMentor(id);
-            return {
+
+            //Logout from all device
+            res.clearCookie('loginToken', {
+                httpOnly: true,  // Corrected capitalization
+                secure: false,   // Set to `true` in production with HTTPS
+                sameSite: 'strict',
+            });
+
+            res.status(200).send({
                 success:true,
                 message:"Mentor Deleted Successfully"
-            }
+            });
         } catch (error) {
-            console.log("Yaha tak to pahunch gaya");
             if(error instanceof PrismaClientKnownRequestError){
-                console.log(error.code);
-                return error;
+                if(error.code == "P2025"){
+                    throw new NotFoundException("No User found");
+                }
+                if(error.code == "P2023"){
+                    throw new BadRequestException("Invalid Id provided");
+                }
             }
-            return error;
             throw new InternalServerErrorException("Something went wrong");
         }
     }
     
     //add time for mentor
     @Put('/time/:id')
+    @Roles('admin','superadmin')
+    @UseGuards(AuthGaurd,RolesGuard)
     async addTime(@Param('id',new ValidationPipe({whitelist:true})) id:id,@Body('time',new ValidationPipe({whitelist:true})) Time:time){
         try {
             const result = await this.mentorService.addTime(id,Time);
@@ -166,6 +186,8 @@ export class MentorController {
     }
 
     @Put('/updateTime/:id')
+    @Roles('admin','superadmin')
+    @UseGuards(AuthGaurd,RolesGuard)
     async updateTime(@Param('id',new ValidationPipe({whitelist:true})) id:id,@Body('Time',new ValidationPipe({whitelist:true})) Time:time){
         try {
             const result = await this.mentorService.updateTime(id,Time);

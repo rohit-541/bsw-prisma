@@ -1,8 +1,9 @@
-import {Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException, UseGuards } from '@nestjs/common';
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from 'src/prisma/prisma.service';
 import otpGenerator from 'otp-generator'
 import { MailService } from 'src/mail/mail.service';
+import { Roles } from 'src/auth/role.gaurd';
 
 @Injectable()
 export class MentorService {
@@ -20,7 +21,7 @@ export class MentorService {
         });
         return result;
     }
-
+    
     //update mentor
     async updateMentor(kerbros:string,data:any){
         const result = await this.prisma.mentor.update({

@@ -25,6 +25,10 @@ export class AuthGaurd implements CanActivate{
             secret:process.env.SECRET_KEY
         });
 
+        if(payload?.role === "admin"){
+            true;
+        }
+
         const result = await this.databaseService.user.findUnique({
             where:{
                 kerbrosId:payload.kerbros,
@@ -62,6 +66,10 @@ export class MentorAuthGaurd implements CanActivate{
             secret:process.env.SECRET_KEY
         });
 
+        if(payload?.role === "admin"){
+            return true;
+        }
+
         const result = await this.databaseService.mentor.findUnique({
             where:{
                 kerbros:payload.kerbros,
@@ -70,6 +78,7 @@ export class MentorAuthGaurd implements CanActivate{
                 }
             }
         });
+
 
         if(!result){
             throw new NotFoundException("User not found");
@@ -94,8 +103,12 @@ export class emailGaurd implements CanActivate{
         }
         const payload = this.jwtService.verify(token,{
             secret:process.env.SECRET_KEY
-        })
-        
+        });
+
+        if(payload.role == "admin"){
+            return true;
+        }
+
         //verify email exists
         const result = await this.databaseService.otps.findUnique({
             where:{
