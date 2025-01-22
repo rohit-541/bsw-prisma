@@ -56,7 +56,8 @@ model Mentor{
   password    String
   course      String           
   tokens      String[]
-
+  hostel      Hostels
+  
   doubts      Doubts[]
   Sessions    session[]
 }
@@ -76,7 +77,8 @@ model session{
   startTime   DateTime        @default(now())
   endTime     DateTime        
   joinLink    String
-  
+  assets      String?
+
   mentor      Mentor          @relation(fields: [mentorId],references: [id])
 }
 
