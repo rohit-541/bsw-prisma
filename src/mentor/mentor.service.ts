@@ -1,14 +1,13 @@
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from 'src/prisma/prisma.service';
 import otpGenerator from 'otp-generator'
 import { MailService } from 'src/mail/mail.service';
-import { error } from 'console';
 
 @Injectable()
 export class MentorService {
 
-    constructor(@Inject()private readonly prisma:PrismaService,
+    constructor(private readonly prisma:PrismaService,
                 private readonly mail:MailService
 ){}
 

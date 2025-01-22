@@ -1,7 +1,6 @@
-import { BadRequestException, CanActivate, ExecutionContext, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'PrismaService';
-import { Observable } from 'rxjs';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -48,7 +47,7 @@ export class AuthGaurd implements CanActivate{
 //AuthGaurd
 export class MentorAuthGaurd implements CanActivate{
 
-    constructor(@Inject(JwtService) private readonly jwtService: JwtService,@Inject(PrismaService) private readonly databaseService: PrismaService
+    constructor(@Inject(JwtService) private readonly jwtService: JwtService,private readonly databaseService: PrismaService
 ){}
 
     async canActivate(context: ExecutionContext):Promise<boolean>{
