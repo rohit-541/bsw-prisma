@@ -26,12 +26,12 @@ model Doubts{
   userId        String        @db.ObjectId
   course        String
   text          String  
-  status        status       
+  status        status           
   imageUrl      String?
   replies       Replies[]
-  mentorId      String        @db.ObjectId
+  mentorId      String?        @db.ObjectId
 
-  mentor        Mentor        @relation(fields: [mentorId],references: [id])
+  mentor        Mentor?        @relation(fields: [mentorId],references: [id])
   user          User          @relation(fields: [userId],references: [id])
 }
 
