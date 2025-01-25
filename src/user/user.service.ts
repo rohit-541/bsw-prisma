@@ -1,6 +1,6 @@
 import {Inject, Injectable } from '@nestjs/common';
 import { MailService } from 'src/mail/mail.service';
-import otpGenrator from 'otp-generator'
+import * as otpGenrator from 'otp-generator'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from 'src/prisma/prisma.service';
 

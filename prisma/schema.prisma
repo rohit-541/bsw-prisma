@@ -25,6 +25,7 @@ model Doubts{
   id            String        @id       @default(auto())  @map("_id") @db.ObjectId
   userId        String        @db.ObjectId
   course        String
+  heading       String
   text          String  
   status        status           
   imageUrl      String?

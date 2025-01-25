@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'PrismaService';
+import { PrismaService } from 'src/prisma/prisma.service';
+
 
 @Injectable()
 export class DoubtsService {
@@ -55,7 +56,21 @@ export class DoubtsService {
 
     //getAll doubts
     async getall(){
-        const result = await this.prisma.doubts.findMany();
+        const result = await this.prisma.doubts.findMany(
+            {
+                select:{
+                    heading:true,
+                    text:true,
+                    imageUrl:true,
+                    user:{
+                        select:{
+                            name:true,
+                            kerbrosId:true
+                        }
+                    }
+                }
+            }
+        );
 
         return result;
     }

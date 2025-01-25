@@ -8,6 +8,11 @@ export class doubtDTO{
 
     @IsNotEmpty()
     @IsString()
+    @Length(15)
+    heading:string
+
+    @IsNotEmpty()
+    @IsString()
     @Matches(/^[a-z]{3}\d{3}$/,{
         message:"course structure must be of form aaa000!"
     })
@@ -35,6 +40,10 @@ export class updateDoubtDTO{
     @IsString()
     @Length(15)
     text:string
+
+    @IsString()
+    @IsOptional()
+    heading:string
 
     @IsOptional()
     @IsUrl()

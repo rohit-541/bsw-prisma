@@ -9,7 +9,7 @@ import { SessionsModule } from './sessions/sessions.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './mail/mail.module';
-import { PrismaService } from 'PrismaService';
+
 
 @Module({
   imports: [UserModule, DoubtsModule, MentorModule, AuthModule, SessionsModule,JwtModule.register({
@@ -17,6 +17,6 @@ import { PrismaService } from 'PrismaService';
     secret:process.env.SECRET_KEY||"yourkey"
   }),PrismaModule,MailModule],
   controllers: [AppController],
-  providers: [AppService,PrismaService],
+  providers: [AppService],
 })
 export class AppModule {}
