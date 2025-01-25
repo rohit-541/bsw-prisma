@@ -53,10 +53,12 @@ export class DoubtsService {
         });
     }
 
-    //reply a doubt
-
     //getAll doubts
+    async getall(){
+        const result = await this.prisma.doubts.findMany();
 
+        return result;
+    }
     //Get all user doubts
     async getUserDoubts(userId:string){
         const result = await this.prisma.doubts.findMany({

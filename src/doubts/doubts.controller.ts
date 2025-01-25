@@ -3,7 +3,7 @@ import { Controller } from '@nestjs/common';
 @Controller('doubts')
 export class DoubtsController {
     //create a doubt
-
+    
     //delete a doubt
 
     //update a doubt
