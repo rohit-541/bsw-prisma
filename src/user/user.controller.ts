@@ -72,14 +72,14 @@ export class UserController {
         throw new InternalServerErrorException('Something went wrong');
       }
     }
-    
+
     //Update the password
     @Post('/setNew')
-    @UseGuards(emailGaurd,AuthGaurd)
+    @UseGuards(emailGaurd)
     async setNew(@Body(new ValidationPipe({whitelist:true})) password:passdto,@Req() req:any){
       try { 
-        await this.userService.setNewPassword(req.user.kerbrosId,password.password);
-        await this.mailService.sendMail(`${req.user.kerbrosId}@iitd.ac.in`,"BSW:AcadmentorShip","Your password has been reset.If not you please update your password and revoke any email access.");
+        await this.userService.setNewPassword(req.email,password.password);
+        await this.mailService.sendMail(`${req.email}@iitd.ac.in`,"BSW:AcadmentorShip","Your password has been reset.If not you please update your password and revoke any email access.");
         return {
           success:true,
           message:"Password updated successfully"
