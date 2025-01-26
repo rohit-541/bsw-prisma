@@ -66,6 +66,7 @@ export class UserController {
         return res.status(200).json({ message: 'OTP verified successfully' });
     
       } catch (error) {
+        console.log(error);
         if (error instanceof HttpException) {
           throw error;
         }
