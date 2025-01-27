@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
 import { doubtDTO, updateDoubtDTO } from './doubtsValidation';
 import { AuthGaurd, MentorAuthGaurd } from 'src/auth/auth.service';
 import { DoubtsService } from './doubts.service';
@@ -47,6 +47,9 @@ export class DoubtsController {
                 if(error.code == "P2025"){
                     throw new NotFoundException("Doubt not found");
                 }
+                if(error.code =="P2023"){
+                    throw new BadRequestException("Invalid Id format");
+                }
             }
             throw new InternalServerErrorException("Something went wrong");
         }
@@ -67,6 +70,9 @@ export class DoubtsController {
                 if(error.code == "P2025"){
                     throw new NotFoundException("Doubt not found");
                 }
+                if(error.code =="P2023"){
+                    throw new BadRequestException("Invalid Id Provided");
+                }
             }
             throw new InternalServerErrorException("Something went wrong");            
         }
@@ -83,6 +89,17 @@ export class DoubtsController {
                 user:result
             }
         } catch (error) {
+
+            if(error instanceof PrismaClientKnownRequestError){
+                if(error.code =="P2025"){
+                    throw new NotFoundException("Doubt not found!");
+                }
+
+                if(error.code == "P2023"){
+                    throw new BadRequestException("Invalid Id Provided");
+                }
+            }
+
             throw new InternalServerErrorException("Something went wrong");
         }
     }

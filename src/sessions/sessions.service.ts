@@ -93,7 +93,6 @@ export class SessionsService {
     }
 
     //get live sessions
-
     async liveSessions(){
         const result = await this.prisma.session.findMany({
         where:{
@@ -174,6 +173,18 @@ export class SessionsService {
         }
     }
 
+    //add session link
+    async addJoinLink(sessionId:string,joinLink:string){
+        const result = await this.prisma.session.update({
+            where:{
+                id:sessionId
+            },
+            data:{
+                joinLink:joinLink
+            }
+        });
 
+        return result;
+    }
     
 }

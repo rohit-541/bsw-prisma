@@ -3,7 +3,8 @@ import { filter, sessionDTO, updateData } from './session.data.validation';
 import { SessionsService } from './sessions.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Roles, RolesGuard } from 'src/auth/role.gaurd';
-import { AuthGaurd } from 'src/auth/auth.service';
+import { AnyAuthGuard, AuthGaurd } from 'src/auth/auth.service';
+import { Url } from 'url';
 
 @Controller('sessions')
 export class SessionsController {
@@ -163,4 +164,28 @@ export class SessionsController {
             throw new InternalServerErrorException("Something went wrong");
         }
     }
-}
+
+    @Put('/joinLink/:id')
+    @Roles('admin','mentor')
+    @UseGuards(AnyAuthGuard,RolesGuard)
+    async addJoinLink(@Param('id') id:string,@Body('joinLink') joinLink:string){
+        try {
+            const result = await this.sessionService.addJoinLink(id,joinLink);
+            return {
+                success:true,
+                session:result
+            }
+        } catch (error) {
+            if(error instanceof PrismaClientKnownRequestError){
+                if(error.code == "P2025"){
+                    throw new NotFoundException("No User found");
+                }
+                if(error.code == "P2023"){
+                    throw new BadRequestException("Invalid Id provided");
+                }
+            }   
+
+            throw new InternalServerErrorException("Something went wrong");
+        }
+    }
+}   
