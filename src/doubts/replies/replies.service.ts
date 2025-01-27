@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from 'PrismaService';
+import { PrismaService } from 'src/prisma/prisma.service';
+
 
 @Injectable()
 export class RepliesService {

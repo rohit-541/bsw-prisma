@@ -20,7 +20,7 @@ export class sessionDTO{
     @IsNotEmpty()
     endTime:string
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsUrl()
     joinLink:string
 

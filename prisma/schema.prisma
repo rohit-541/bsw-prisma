@@ -82,7 +82,7 @@ model session{
   mentorId    String          @db.ObjectId
   startTime   DateTime        @default(now())
   endTime     DateTime        
-  joinLink    String
+  joinLink    String?       
   assets      String?
 
   mentor      Mentor          @relation(fields: [mentorId],references: [id])
