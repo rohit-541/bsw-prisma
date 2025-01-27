@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 
@@ -9,6 +9,19 @@ export class RepliesService {
 
     //create a reply
     async createReply(data:any,userId:string){
+
+        //Verify if doubt exists
+        const doubt = await this.prisma.doubts.findUnique({
+            where:{
+                id:data.doubtId
+            }
+        });
+
+        if(!doubt){
+            throw new NotFoundException("Doubt with this Id not found!");
+        }
+
+
         const result = await this.prisma.replies.create({
             data:{
                 userId:userId,
@@ -49,10 +62,11 @@ export class RepliesService {
     }
 
     //update a reply
-    async updateReply(replyId:string,data:any){
+    async updateReply(replyId:string,data:any,userId:string){
         const result = await this.prisma.replies.update({
             where:{
-                id:replyId
+                id:replyId,
+                userId:userId
             },
             data:data
         });
@@ -70,6 +84,7 @@ export class RepliesService {
                 replyText:true,
                 User:{
                     select:{
+                        id:true,
                         name:true,
                         kerbrosId:true,
                     }

@@ -3,7 +3,7 @@ import { doubtDTO, updateDoubtDTO } from './doubtsValidation';
 import { AuthGaurd, MentorAuthGaurd } from 'src/auth/auth.service';
 import { DoubtsService } from './doubts.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { RolesGuard } from 'src/auth/role.gaurd';
+
 
 @Controller('doubts')
 export class DoubtsController {

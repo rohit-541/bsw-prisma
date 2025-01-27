@@ -42,9 +42,9 @@ model Replies{
   id            String        @id   @default(auto()) @map("_id") @db.ObjectId
   userId        String        @db.ObjectId
   replyText     String        
-  imageUrl      String
-  upVotes       Int
-  downVotes     Int
+  imageUrl      String?
+  upVotes       Int           @default(0)
+  downVotes     Int           @default(0)
 
   User          User          @relation(fields: [userId],references: [id])
   doubtId       String        @db.ObjectId

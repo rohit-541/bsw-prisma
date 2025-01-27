@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, InternalServerErrorException, Param, Post, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, InternalServerErrorException, Param, Post, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AnyAuthGuard, AuthGaurd } from 'src/auth/auth.service';
 import { replyDTO, updateReplyDto } from './replyDTO';
 import { RepliesService } from './replies.service';
@@ -20,12 +20,15 @@ export class RepliesController {
                 reply:result
             }
         } catch (error) {
+            if(error instanceof HttpException){
+                throw error;
+            }
             throw new InternalServerErrorException("Something went wrong");
         }
     }
 
     //delete a reply
-    @Put('/:id')
+    @Delete('/:id')
     @UseGuards(AnyAuthGuard)
     async deleteReply(@Param('id') id:string,@Req() req:any){
         //Two user can delete reply 
@@ -53,15 +56,19 @@ export class RepliesController {
     //update a reply
     @Put('/:id')
     @UseGuards(AnyAuthGuard)
-    async updateReply(@Req() req:any,data:updateReplyDto,@Param('id') id:string){
+    async updateReply(@Req() req:any,@Body(new ValidationPipe({whitelist:true})) data:updateReplyDto,@Param('id') id:string){
+
+        //Only user who posted it is able to update it
         const userId = req.user.id;
         try {
-            const result = await this.replyService.updateReply(id,data);
+            console.log(data);
+            const result = await this.replyService.updateReply(id,data,userId);
             return {
                 success:true,
                 reply:result
             }
         } catch (error) {
+            console.log(error);
             if(error instanceof HttpException){
                 throw error;
             }
