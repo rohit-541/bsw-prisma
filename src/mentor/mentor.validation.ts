@@ -1,4 +1,4 @@
-import { Hostels } from "@prisma/client";
+import { Gender, Hostels } from "@prisma/client";
 import { IsEmail, IsEnum, isHexadecimal, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches, Min } from "class-validator"
 
 export class mentorDTO{
@@ -40,6 +40,11 @@ export class mentorDTO{
       message:"course code must be of form aaa000"
     })
     course:string
+
+    @IsString()
+    @IsNotEmpty()
+    @IsEnum(Gender)
+    Gender:string
 
     @IsString()
     @IsEnum(Hostels)

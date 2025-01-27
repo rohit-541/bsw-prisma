@@ -40,7 +40,7 @@ export class AuthGaurd implements CanActivate{
         });
         console.log(payload);
         if(!result){
-            throw new NotFoundException("User not found");
+            throw new UnauthorizedException("Not Allowed");
         }
         
         request.role = result.role;
@@ -83,7 +83,7 @@ export class MentorAuthGaurd implements CanActivate{
 
 
         if(!result){
-            throw new NotFoundException("User not found");
+            throw new UnauthorizedException("Not Allowed");
         }
         
         request.user = result;
