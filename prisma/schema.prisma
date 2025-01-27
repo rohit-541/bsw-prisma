@@ -61,7 +61,7 @@ model Mentor{
   tokens      String[]
   hostel      Hostels
   Gender      Gender
-  
+
   doubts      Doubts[]
   Sessions    session[]
 }
@@ -96,6 +96,18 @@ enum Hostels{
   Jwalamukhi
   Nilgiri
   Karakoram
+  Girnar
+  Kailash
+  Himadri
+  Sahyadri
+  Satpura
+  Udaigiri
+  Kumaon
+  Shivalik
+  Zanskar
+  Vindyanchal
+  Dronagiri
+  Saptgiri
 }
 
 enum Role{
