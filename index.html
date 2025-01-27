@@ -152,7 +152,8 @@
                 const response = await fetch('http://localhost:3000/user/register', {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization":token
                     },
                     credentials:"include",
                     body: JSON.stringify({

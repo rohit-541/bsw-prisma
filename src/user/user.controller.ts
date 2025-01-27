@@ -63,7 +63,7 @@ export class UserController {
           secure: false,    // Set to `true` in production with HTTPS
           maxAge: 3600000,  // 1 hour
         });
-        return res.status(200).json({ message: 'OTP verified successfully' });
+        return res.status(200).json({ message: 'OTP verified successfully',token:token });
     
       } catch (error) {
         console.log(error);
@@ -114,7 +114,7 @@ export class UserController {
               maxAge: 3600000,  // 1 hour
             });
             console.log(res.cookie);
-            return res.status(200).json({ message: 'Login successfully', user:result });
+            return res.status(200).json({ message: 'Login successfully', user:result ,token:token });
 
         } catch (error) {
           console.log(error);
@@ -154,7 +154,7 @@ export class UserController {
           maxAge: 3600000,  // 1 hour
         });
       console.log(res.cookie);
-        return res.status(200).json({ message: 'Login successfully', user:result });
+        return res.status(200).json({ message: 'Login successfully', user:result,token:token });
       
       } catch (error) {
         if(error instanceof UnauthorizedException){

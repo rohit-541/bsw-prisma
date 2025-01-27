@@ -16,7 +16,7 @@ export class AuthGaurd implements CanActivate{
     async canActivate(context: ExecutionContext):Promise<boolean>{
         const request = context.switchToHttp().getRequest();
 
-        const token = request.cookies['loginToken'];
+        const token = request.headers['Authorization'];
         if(!token){
             throw new UnauthorizedException("Invalid or missing token");
         }
@@ -58,7 +58,7 @@ export class MentorAuthGaurd implements CanActivate{
     async canActivate(context: ExecutionContext):Promise<boolean>{
         const request = context.switchToHttp().getRequest();
 
-        const token = request.cookies['loginToken'];
+        const token = request.headers['Authorization'];
         if(!token){
             throw new UnauthorizedException("Invalid or missing token");
         }
@@ -98,7 +98,7 @@ export class emailGaurd implements CanActivate{
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
-        const token = request.cookies['token'];
+        const token = request.headers['Authorization'];
         if(!token){
             throw new UnauthorizedException("Invalid or missing token");
         }
