@@ -52,11 +52,6 @@ export class userDTO{
   @IsNotEmpty()
   @IsEnum(Hostels)
   hostel:Hostels
-
-  @IsNumber()
-  @IsNotEmpty()
-  avatar:number
-
 }
 
 export class updateDTO{
