@@ -18,9 +18,10 @@ export class UserController {
     //sendOTP
     @Post('/verifyEmail')
     @Post('/resetPassword')
-    async sendOTP(@Body(new ValidationPipe({whitelist:true})) data:emailDTO){
+    async sendOTP(@Body(new ValidationPipe({whitelist:true})) data:emailDTO,@Req() req:any){
         const email = data.kerbros+"@iitd.ac.in";
         try {
+            console.log(req.cookies);
             this.userService.sendOTP(email);
             return {
                 success:true,
@@ -28,6 +29,7 @@ export class UserController {
             }
         } catch (error) {
             console.log(error);
+            throw new InternalServerErrorException("Something went wrong");
         }
     }
     
@@ -35,8 +37,7 @@ export class UserController {
     @Post('/verifyOTP')
     async verifyOTP(
       @Body(new ValidationPipe({ whitelist: true })) data: otpDTO,
-      @Res() res: Response
-    ) {
+      @Res() res:any) {
       const email = data.kerbros + "@iitd.ac.in";
       const otp = Number(data.otp);
     
@@ -54,15 +55,14 @@ export class UserController {
             expiresIn: '1h'  // Optional: Set expiration for the token
           }
         );
-    
+        
+
         // Embed token in HTTP-only cookie
         res.cookie('token', token, {
           httpOnly: true,   // Corrected to lowercase
           secure: false,    // Set to `true` in production with HTTPS
           maxAge: 3600000,  // 1 hour
-          sameSite: 'strict'
         });
-    
         return res.status(200).json({ message: 'OTP verified successfully' });
     
       } catch (error) {
@@ -70,6 +70,7 @@ export class UserController {
         if (error instanceof HttpException) {
           throw error;
         }
+
         throw new InternalServerErrorException('Something went wrong');
       }
     }
@@ -116,7 +117,7 @@ export class UserController {
 
     //login user
     @Post('/login')
-    async loginUser(@Body(new ValidationPipe()) data:loginDTO,@Res() res:any){
+    async loginUser(@Body(new ValidationPipe()) data:loginDTO,@Res() res:Response){
       try {
         const result = await this.userService.loginUser(data.kerbrosId,data.password);
         if(!result){
@@ -135,12 +136,12 @@ export class UserController {
             
         // Embed token in HTTP-only cookie
         res.cookie('loginToken', token, {
-          httpOnly: true,   // Corrected to lowercase
-          secure: false,    // Set to `true` in production with HTTPS
-          maxAge: 3600000,  // 1 hour
-          sameSite: 'strict'
+          // httpOnly: true,   // Corrected to lowercase
+          // secure: false,    // Set to `true` in production with HTTPS
+          // maxAge: 3600000,  // 1 hour
+          // sameSite: 'none'
         });
-    
+      console.log(res.cookie);
         return res.status(200).json({ message: 'Login successfully' });
       
       } catch (error) {

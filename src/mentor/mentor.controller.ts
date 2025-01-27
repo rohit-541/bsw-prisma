@@ -38,6 +38,7 @@ export class MentorController {
 
     //update mentor
     @Put('/')
+    @Roles('admin','superadmin','mentor')
     @UseGuards(MentorAuthGaurd)
     async updateMentor(@Body(new ValidationPipe({whitelist:true})) data:UpdateMentorDTO,@Req() req:any){
         try {

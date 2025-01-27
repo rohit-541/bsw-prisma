@@ -24,8 +24,9 @@ export class AuthGaurd implements CanActivate{
         const payload = await this.jwtService.verifyAsync(token,{
             secret:process.env.SECRET_KEY
         });
-
+        
         if(payload?.role === "admin"){
+            request.role = "admin";
             true;
         }
 
@@ -42,8 +43,8 @@ export class AuthGaurd implements CanActivate{
             throw new NotFoundException("User not found");
         }
         
+        request.role = result.role;
         request.user = result;
-
         return true;
     }
 }
