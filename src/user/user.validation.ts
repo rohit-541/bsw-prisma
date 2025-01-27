@@ -44,6 +44,9 @@ export class userDTO{
   @IsEnum(Gender)
   Gender:string
 
+  @IsNumber()
+  @Min(0)
+  avatar:number
 
   @IsString()
   @IsNotEmpty()

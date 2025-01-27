@@ -63,7 +63,7 @@ export class UserController {
           secure: false,    // Set to `true` in production with HTTPS
           maxAge: 3600000,  // 1 hour
         });
-        return res.status(200).json({ message: 'OTP verified successfully' });
+        return res.status(200).json({ message: 'OTP verified successfully',token:token });
     
       } catch (error) {
         console.log(error);
@@ -95,16 +95,29 @@ export class UserController {
     //Register User
     @Post('/register')
     @UseGuards(emailGaurd)
-    async registerUser(@Body(new ValidationPipe({whitelist:true})) data:userDTO,@Req() req:any){
+    async registerUser(@Body(new ValidationPipe({whitelist:true})) data:userDTO,@Req() req:any,@Res() res:any){
         try {
             const email = req.email;
             const result = await this.userService.registerUser(data,email);
-            return {
-                success:true,
-                user:result
-            }
+                    //User is verified
+            const token = this.jwtService.sign({
+              kerbros:email
+            },{
+              secret:process.env.SECRET_KEY
+            });
+            await this.userService.addToken(token,email);
+            
+            // Embed token in HTTP-only cookie
+            res.cookie('loginToken', token, {
+              httpOnly: true,   // Corrected to lowercase
+              secure: false,    // Set to `true` in production with HTTPS
+              maxAge: 3600000,  // 1 hour
+            });
+            console.log(res.cookie);
+            return res.status(200).json({ message: 'Login successfully', user:result ,token:token });
+
         } catch (error) {
-            console.log(error);
+          console.log(error);
             if(error instanceof PrismaClientKnownRequestError){
                 if(error.code == "P2002"){
                     throw new BadRequestException("User already exists");
@@ -141,7 +154,7 @@ export class UserController {
           maxAge: 3600000,  // 1 hour
         });
       console.log(res.cookie);
-        return res.status(200).json({ message: 'Login successfully', user:result });
+        return res.status(200).json({ message: 'Login successfully', user:result,token:token });
       
       } catch (error) {
         console.log(error);
