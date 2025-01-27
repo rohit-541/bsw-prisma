@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
 import { doubtDTO, updateDoubtDTO } from './doubtsValidation';
 import { AuthGaurd } from 'src/auth/auth.service';
 import { DoubtsService } from './doubts.service';
@@ -24,7 +24,9 @@ export class DoubtsController {
             }
         } catch (error) {
             console.log(error);
-            
+            if(error instanceof HttpException){
+                throw error;
+            }
             throw new InternalServerErrorException("Something went wrong");
         }
     }

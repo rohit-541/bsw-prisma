@@ -38,7 +38,7 @@ export class AuthGaurd implements CanActivate{
                 }
             }
         });
-
+        console.log(payload);
         if(!result){
             throw new NotFoundException("User not found");
         }
