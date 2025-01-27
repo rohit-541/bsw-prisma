@@ -17,7 +17,7 @@ model User{
   hostel        Hostels   
   role          String        @default("user")   
   tokens        String[]      //Login from multiple device
-  Gender        String        
+  Gender        Gender        
   avatar        Int        
 
   doubts        Doubts[]
@@ -29,13 +29,13 @@ model Doubts{
   course        String
   heading       String
   text          String  
-  status        status           
+  status        status         @default(Pending)
   imageUrl      String?
   replies       Replies[]
   mentorId      String?        @db.ObjectId
 
   mentor        Mentor?        @relation(fields: [mentorId],references: [id])
-  user          User          @relation(fields: [userId],references: [id])
+  user          User           @relation(fields: [userId],references: [id])
 }
 
 model Replies{
@@ -60,6 +60,7 @@ model Mentor{
   course      String           
   tokens      String[]
   hostel      Hostels
+  Gender      Gender
   
   doubts      Doubts[]
   Sessions    session[]
@@ -102,4 +103,10 @@ enum Role{
   user
   superadmin
   mentor
+}
+
+enum Gender{
+  Male
+  Female
+  Others
 }

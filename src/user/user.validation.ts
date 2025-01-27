@@ -1,4 +1,4 @@
-import { Hostels } from '@prisma/client';
+import { Gender, Hostels } from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches, Min, MinLength } from 'class-validator';
 import { Response } from 'supertest';
 
@@ -39,6 +39,12 @@ export class userDTO{
   })
   password:string
 
+  @IsNotEmpty()
+  @IsString()
+  @IsEnum(Gender)
+  Gender:string
+
+
   @IsString()
   @IsNotEmpty()
   @IsEnum(Hostels)
@@ -55,6 +61,10 @@ export class updateDTO{
   @IsOptional()
   @IsEnum(Hostels)
   hostel:string
+
+  @IsOptional()
+  @IsEnum(Gender)
+  Gender:string
 }
 
 export class passdto{

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
 import { doubtDTO, updateDoubtDTO } from './doubtsValidation';
 import { AuthGaurd } from 'src/auth/auth.service';
 import { DoubtsService } from './doubts.service';
@@ -12,8 +12,11 @@ export class DoubtsController {
     //create a doubt
     @Post('/')
     @UseGuards(AuthGaurd)
-    async createDoubt(@Body(new ValidationPipe({whitelist:true})) data:doubtDTO){
+    async createDoubt(@Body(new ValidationPipe({whitelist:true})) data:doubtDTO,@Req() req:any){
         try {
+            if(data.userId != req.user.id){
+                throw new UnauthorizedException("You can not post doubts on other's behalf");
+            }
             const result = await this.doubtService.createDoubt(data);
             return{
                 success:true,

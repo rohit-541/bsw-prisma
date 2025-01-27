@@ -9,7 +9,10 @@ export class DoubtsService {
 
     //create a doubt
     async createDoubt(data:any){
-        const result = await this.prisma.doubts.create(data);
+
+        const result = await this.prisma.doubts.create({
+            data:data
+        });
         return result;
     }
 
