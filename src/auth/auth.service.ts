@@ -98,7 +98,9 @@ export class emailGaurd implements CanActivate{
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
-        const token = request.headers['Authorization'];
+        const token = request.headers['authorization'];
+        console.log(token);
+        console.log(request.headers);
         if(!token){
             throw new UnauthorizedException("Invalid or missing token");
         }
