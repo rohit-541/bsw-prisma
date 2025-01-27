@@ -104,7 +104,7 @@ export class UserController {
                 user:result
             }
         } catch (error) {
-
+            console.log(error);
             if(error instanceof PrismaClientKnownRequestError){
                 if(error.code == "P2002"){
                     throw new BadRequestException("User already exists");
@@ -144,6 +144,7 @@ export class UserController {
         return res.status(200).json({ message: 'Login successfully', user:result });
       
       } catch (error) {
+        console.log(error);
         if(error instanceof UnauthorizedException){
           throw error;
         }
