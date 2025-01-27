@@ -11,12 +11,8 @@ export class UserService {
 
     //sendOTP
     async sendOTP(email:string){
-        console.log("Reached Here");
         //Create a otp
         const otp = Number(otpGenrator.generate(4,{lowerCaseAlphabets:false,upperCaseAlphabets:false,specialChars:false}));
-
-        console.log(otp);
-
 
         try {
             //Send this otp to user
@@ -48,8 +44,7 @@ export class UserService {
                 expiresAt:dateEnd
             }
         });
-
-        console.log(result);
+        
         return true; 
         } catch (error) {
             console.log(error);
@@ -97,7 +92,18 @@ export class UserService {
             }
         });
 
-        return await bcrypt.compare(password,result.password);
+        const resultCompare = await bcrypt.compare(password,result.password);
+        if(!resultCompare){
+            return null;
+        }
+
+        return {
+            id:result.id,
+            name:result.name,
+            hostel:result.hostel,
+            kerbrosId:result.kerbrosId,
+            role:result.role,
+        };
     }
 
     //addToken to user 
