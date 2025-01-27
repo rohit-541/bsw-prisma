@@ -19,7 +19,7 @@ model User{
   tokens        String[]      //Login from multiple device
   Gender        Gender        
   avatar        Int        
-
+  replies       Replies[]
   doubts        Doubts[]
 }
 
@@ -45,6 +45,8 @@ model Replies{
   imageUrl      String
   upVotes       Int
   downVotes     Int
+
+  User          User          @relation(fields: [userId],references: [id])
   doubtId       String        @db.ObjectId
   doubt         Doubts        @relation(fields: [doubtId],references: [id])
 }

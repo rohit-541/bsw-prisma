@@ -126,4 +126,30 @@ export class emailGaurd implements CanActivate{
     }
 }
 
-//Role Gaurd
+@Injectable()
+export class AnyAuthGuard implements CanActivate {
+  private guards: CanActivate[];
+
+  constructor(private jwtService: JwtService, private prismaService: PrismaService) {
+    // Initialize guards with necessary dependencies
+    this.guards = [
+      new MentorAuthGaurd(this.jwtService, this.prismaService),
+      new AuthGaurd(this.jwtService, this.prismaService),
+    ];
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    for (const guard of this.guards) {
+      try {
+        if (await guard.canActivate(context)) {
+          return true; // If any guard passes, grant access
+        }
+      } catch (error) {
+        // Continue to the next guard instead of failing immediately
+      }
+    }
+    
+    throw new UnauthorizedException('Unauthorized access: No valid authentication found.');
+  }
+}
+
