@@ -58,10 +58,12 @@ export class UserController {
         
 
         // Embed token in HTTP-only cookie
+        console.log("object")
         res.cookie('token', token, {
           httpOnly: true,   // Corrected to lowercase
-          secure: false,    // Set to `true` in production with HTTPS
+          secure: 'None',    // Set to `true` in production with HTTPS
           maxAge: 3600000,  // 1 hour
+          sameSite: 'None'
         });
         return res.status(200).json({ message: 'OTP verified successfully',token:token });
     
@@ -108,10 +110,12 @@ export class UserController {
             await this.userService.addToken(token,email);
             
             // Embed token in HTTP-only cookie
+            console.log("object")
             res.cookie('loginToken', token, {
               httpOnly: true,   // Corrected to lowercase
-              secure: false,    // Set to `true` in production with HTTPS
-              maxAge: 3600000,  // 1 hour
+              secure: "None", 
+              samsite: "None",  // Set to `true` in production with HTTPS
+              maxAge: 3600000,  // 1 hour\
             });
             console.log(res.cookie);
             return res.status(200).json({ message: 'Login successfully', user:result ,token:token });
@@ -148,11 +152,15 @@ export class UserController {
         await this.userService.addToken(token,data.kerbrosId);
             
         // Embed token in HTTP-only cookie
+        console.log("objectasfawefwafew")
         res.cookie('loginToken', token, {
-          httpOnly: true,   // Corrected to lowercase
-          secure: false,    // Set to `true` in production with HTTPS
+          httpOnly: true, 
+          secure: true, // Use true in production, false in development
           maxAge: 3600000,  // 1 hour
+          sameSite: 'none', // 'none' for production, 'lax' for development
         });
+      
+      
       console.log(res.cookie);
         return res.status(200).json({ message: 'Login successfully', user:result,token:token });
       

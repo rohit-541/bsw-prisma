@@ -32,6 +32,7 @@ export class MentorController {
                     throw new BadRequestException("User already exixts");
                 }
             }
+            console.log(error)
             throw new InternalServerErrorException("Something went wrong");
         }
     }
@@ -76,9 +77,9 @@ export class MentorController {
             // Embed token in HTTP-only cookie
             res.cookie('loginToken', token, {
                 httpOnly: true,   // Corrected to lowercase
-                secure: false,    // Set to `true` in production with HTTPS
+                secure: 'None',    // Set to `true` in production with HTTPS
                 maxAge: 3600000,  // 1 hour
-                sameSite: 'strict'
+                sameSite: 'None'
             });
         
             return res.status(200).json({ message: 'Login successfully',token:token });
@@ -283,9 +284,9 @@ export class MentorController {
         // Embed token in HTTP-only cookie
         res.cookie('token', token, {
             httpOnly: true,   // Corrected to lowercase
-            secure: false,    // Set to `true` in production with HTTPS
+            secure: 'None',    // Set to `true` in production with HTTPS
             maxAge: 3600000,  // 1 hour
-            sameSite: 'strict'
+            sameSite: 'None'
         });
     
         return res.status(200).json({ message: 'OTP verified successfully' });
