@@ -268,4 +268,23 @@ export class MentorService {
         return true;
     }
     
+
+    async allMentors(){
+        const result = await this.prisma.mentor.findMany(
+            {
+                select:{
+                    id:true,
+                    name:true,
+                    email:true,
+                    course:true,
+                    contact:true,
+                    hostel:true,
+                    kerbros:true,
+                    Gender:true
+                }
+            }
+        );
+
+        return result;
+    }
 }
