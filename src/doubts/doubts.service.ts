@@ -32,7 +32,7 @@ export class DoubtsService {
                 id:doubtId
             },
             data:data,
-            select:{
+            include:{
                 user:{
                     select:{
                         name:true,
@@ -46,7 +46,7 @@ export class DoubtsService {
     }
 
     //resolve a doubt
-    async resolveDoubt(doubtId:string){
+    async resolveDoubt(doubtId:string,email:string){
         await this.prisma.doubts.update({
             where:{
                 id:doubtId
@@ -55,6 +55,17 @@ export class DoubtsService {
                 status:"Resolved"
             }
         });
+
+        const user = await this.prisma.mentor.findUnique({
+            where:{
+                kerbros:email
+            }
+        });
+
+        return {
+            id:user.id,
+            name:user.name
+        };
     }
 
     //getAll doubts

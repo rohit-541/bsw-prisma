@@ -40,7 +40,7 @@ export class AuthGaurd implements CanActivate{
         });
         console.log(payload);
         if(!result){
-            throw new NotFoundException("User not found");
+            throw new UnauthorizedException("Not Allowed");
         }
         
         request.role = result.role;
@@ -83,7 +83,7 @@ export class MentorAuthGaurd implements CanActivate{
 
 
         if(!result){
-            throw new NotFoundException("User not found");
+            throw new UnauthorizedException("Not Allowed");
         }
         
         request.user = result;
@@ -126,4 +126,30 @@ export class emailGaurd implements CanActivate{
     }
 }
 
-//Role Gaurd
+@Injectable()
+export class AnyAuthGuard implements CanActivate {
+  private guards: CanActivate[];
+
+  constructor(private jwtService: JwtService, private prismaService: PrismaService) {
+    // Initialize guards with necessary dependencies
+    this.guards = [
+      new MentorAuthGaurd(this.jwtService, this.prismaService),
+      new AuthGaurd(this.jwtService, this.prismaService),
+    ];
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    for (const guard of this.guards) {
+      try {
+        if (await guard.canActivate(context)) {
+          return true; // If any guard passes, grant access
+        }
+      } catch (error) {
+        // Continue to the next guard instead of failing immediately
+      }
+    }
+    
+    throw new UnauthorizedException('Unauthorized access: No valid authentication found.');
+  }
+}
+

@@ -51,6 +51,7 @@ export class SessionsService {
                 assets:true,
                 mentor:{
                     select:{
+                        id:true,
                         name:true,
                         contact:true,
                         email:true,
@@ -92,7 +93,6 @@ export class SessionsService {
     }
 
     //get live sessions
-
     async liveSessions(){
         const result = await this.prisma.session.findMany({
         where:{
@@ -151,14 +151,40 @@ export class SessionsService {
         return result;
     }
 
-    //filter sessions
-    async filterSessions(data:filter){
-        const result = await this.prisma.session.findMany({
+    //Session mentor wise
+    async filterSessions(data: filter) {
+        const whereClause: any = {};
+        if (data?.mentorId) {
+            whereClause.mentorId = data.mentorId;
+        }
+        if (data?.course) {
+            whereClause.course = data.course;
+        }
+        console.log(data);
+        console.log(whereClause);
+        try {
+            const result = await this.prisma.session.findMany({
+                where: whereClause,
+            });
+            return result;
+        } catch (error) {
+            console.error("Error fetching sessions:", error);
+            throw new Error("Failed to fetch sessions");
+        }
+    }
+
+    //add session link
+    async addJoinLink(sessionId:string,joinLink:string){
+        const result = await this.prisma.session.update({
             where:{
-                mentorId:data?.mentorId || {},
-                course:data?.course||{},
+                id:sessionId
+            },
+            data:{
+                joinLink:joinLink
             }
         });
+
         return result;
     }
+    
 }

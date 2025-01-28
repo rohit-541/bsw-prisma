@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
 import { doubtDTO, updateDoubtDTO } from './doubtsValidation';
-import { AuthGaurd } from 'src/auth/auth.service';
+import { AuthGaurd, MentorAuthGaurd } from 'src/auth/auth.service';
 import { DoubtsService } from './doubts.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
 
 @Controller('doubts')
 export class DoubtsController {
@@ -33,6 +34,7 @@ export class DoubtsController {
 
     //delete a doubt
     @Delete('/:id')
+    @UseGuards(AuthGaurd)
     async deleteDoubt(@Param('doubtId') doubtId:string){
         try {
             await this.doubtService.deleteDoubt(doubtId);
@@ -45,6 +47,9 @@ export class DoubtsController {
                 if(error.code == "P2025"){
                     throw new NotFoundException("Doubt not found");
                 }
+                if(error.code =="P2023"){
+                    throw new BadRequestException("Invalid Id format");
+                }
             }
             throw new InternalServerErrorException("Something went wrong");
         }
@@ -52,6 +57,7 @@ export class DoubtsController {
 
     //update a doubt
     @Put('/:id')
+    @UseGuards(AuthGaurd)
     async updateDoubt(@Param('id') id:string,@Body(new ValidationPipe()) data:updateDoubtDTO){
         try {
             const result = await this.doubtService.updateDoubt(id,data);
@@ -64,22 +70,42 @@ export class DoubtsController {
                 if(error.code == "P2025"){
                     throw new NotFoundException("Doubt not found");
                 }
+                if(error.code =="P2023"){
+                    throw new BadRequestException("Invalid Id Provided");
+                }
             }
             throw new InternalServerErrorException("Something went wrong");            
         }
     }
     //resolve a doubt
     @Put('/resolve/:id')
-    async resolveDoubt(@Param('id') id:string){
+    @UseGuards(MentorAuthGaurd)
+    async resolveDoubt(@Param('id') id:string,@Req() req:any){
         try {
-            const result = await this.doubtService.resolveDoubt(id);
+            const result = await this.doubtService.resolveDoubt(id,req.user.kerbros);
+
+            return {
+                success:true,
+                user:result
+            }
         } catch (error) {
+
+            if(error instanceof PrismaClientKnownRequestError){
+                if(error.code =="P2025"){
+                    throw new NotFoundException("Doubt not found!");
+                }
+
+                if(error.code == "P2023"){
+                    throw new BadRequestException("Invalid Id Provided");
+                }
+            }
+
             throw new InternalServerErrorException("Something went wrong");
         }
     }
 
     // getAll doubts
-    @Get('/doubts/all')
+    @Get('/doubt/all')
     async allDoubts(){
         try {
             const result = await this.doubtService.getall();
@@ -88,7 +114,7 @@ export class DoubtsController {
                 doubts:result
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
             throw new InternalServerErrorException("Something went wrong");
         }
     }

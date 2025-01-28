@@ -27,6 +27,7 @@ export class MentorController {
                 user:result
             }
         } catch (error) {
+            console.log(error);
             if(error instanceof PrismaClientKnownRequestError){
                 if(error.code == "P2002"){
                     throw new BadRequestException("User already exixts");
