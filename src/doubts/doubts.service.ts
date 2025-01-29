@@ -78,6 +78,7 @@ export class DoubtsService {
                     imageUrl:true,
                     user:{
                         select:{
+                            id:true,
                             name:true,
                             kerbrosId:true
                         }
