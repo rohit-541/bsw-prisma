@@ -238,6 +238,11 @@ export class MentorController {
             if(error instanceof NotFoundException){
                 throw error;
             }
+            if(error instanceof PrismaClientKnownRequestError){
+                if(error.code == "P2023"){
+                    throw new BadRequestException("Invalid Id Provided");
+                }
+            }
 
             throw new InternalServerErrorException("Something went wrong");
         }
@@ -317,4 +322,17 @@ export class MentorController {
         }
     }
 
+
+    @Get('/mentors/all')
+    async allMentors(){
+        try {
+            const result = await this.mentorService.allMentors();
+            return {
+                success:true,
+                mentors:result
+            }
+        } catch (error) {
+            throw new InternalServerErrorException("Something went wrong!");
+        }
+    }
 }
