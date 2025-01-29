@@ -77,6 +77,7 @@ export class DoubtsService {
                     heading:true,
                     text:true,
                     imageUrl:true,
+                    status:true,
                     user:{
                         select:{
                             id:true,
@@ -90,6 +91,7 @@ export class DoubtsService {
 
         return result;
     }
+    
     //Get all user doubts
     async getUserDoubts(userId:string){
         console.log(userId);
