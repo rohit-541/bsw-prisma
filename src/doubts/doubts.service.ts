@@ -73,6 +73,7 @@ export class DoubtsService {
         const result = await this.prisma.doubts.findMany(
             {
                 select:{
+                    id:true,
                     heading:true,
                     text:true,
                     imageUrl:true,
