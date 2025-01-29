@@ -19,7 +19,18 @@ export class MentorService {
         const result = await this.prisma.mentor.create({
             data:data
         });
-        return result;
+        return {
+            id:result.id,
+            name:result.name,
+            email:result.email,
+            contact:result.contact,
+            Gender:result.Gender,
+            kerbros:result.kerbros,
+            hostel:result.hostel,
+            course:result.course,
+            hours:result.hours,
+            role:result.role,
+        };
     }
     
     //update mentor
@@ -57,7 +68,18 @@ export class MentorService {
             throw new UnauthorizedException("Invalid Credentials");
         }
 
-        return user;
+        return {
+            id:user.id,
+            name:user.name,
+            email:user.email,
+            contact:user.contact,
+            Gender:user.Gender,
+            kerbros:user.kerbros,
+            hostel:user.hostel,
+            course:user.course,
+            hours:user.hours,
+            role:user.role,
+        };
     }
 
     //addToken to user 

@@ -63,6 +63,7 @@ model Mentor{
   tokens      String[]
   hostel      Hostels
   Gender      Gender
+  role        String          @default("Mentor")
 
   doubts      Doubts[]
   Sessions    session[]
