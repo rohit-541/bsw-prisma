@@ -105,19 +105,11 @@ export class UserController {
             const token = this.jwtService.sign({
               kerbros:email
             },{
-              secret:process.env.SECRET_KEY
+              secret:process.env.SECRET_KEY,
+              expiresIn:'1h'
             });
             await this.userService.addToken(token,email);
             
-            // Embed token in HTTP-only cookie
-            console.log("object")
-            res.cookie('loginToken', token, {
-              httpOnly: true,   // Corrected to lowercase
-              secure: "None", 
-              samsite: "None",  // Set to `true` in production with HTTPS
-              maxAge: 3600000,  // 1 hour\
-            });
-            console.log(res.cookie);
             return res.status(200).json({ message: 'Login successfully', user:result ,token:token });
 
         } catch (error) {
@@ -140,35 +132,30 @@ export class UserController {
         if(!result){
           throw new UnauthorizedException("Invalid Credentials");
         }
-
-        //User is verified
-        const token = this.jwtService.sign({
-          kerbros:data.kerbrosId
-        },{
-          secret:process.env.SECRET_KEY
-        });
+      // User is verified
+      const token = this.jwtService.sign(
+        {
+          kerbros: data.kerbrosId,
+        },
+        {
+          secret: process.env.SECRET_KEY,
+          expiresIn: '1h', // Corrected typo
+        }
+      );
         
         //Add token to user list
         await this.userService.addToken(token,data.kerbrosId);
             
-        // Embed token in HTTP-only cookie
-        console.log("objectasfawefwafew")
-        res.cookie('loginToken', token, {
-          httpOnly: true, 
-          secure: true, // Use true in production, false in development
-          maxAge: 3600000,  // 1 hour
-          sameSite: 'none', // 'none' for production, 'lax' for development
-        });
-      
-      
       console.log(res.cookie);
         return res.status(200).json({ message: 'Login successfully', user:result,token:token });
       
       } catch (error) {
         console.log(error);
-        if(error instanceof UnauthorizedException){
+
+        if(error instanceof HttpException){
           throw error;
         }
+
         throw new InternalServerErrorException("Something went wrong!");
       }
     }
@@ -202,7 +189,7 @@ export class UserController {
     @Post('/logout/')
     @UseGuards(AuthGaurd)
     async logout(@Req() req: any, @Res() res: any) {
-      const token = req.cookies['loginToken'];
+      const token = req.headers['authorization'];
       
       if(!token){
         res.status(200).send("Logged out successfully");

@@ -28,7 +28,7 @@ model Doubts{
   userId        String        @db.ObjectId
   course        String
   heading       String
-  text          String  
+  text          String?  
   status        status         @default(Pending)
   imageUrl      String?
   replies       Replies[]

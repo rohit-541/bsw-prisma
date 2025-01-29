@@ -160,8 +160,7 @@ export class SessionsService {
         if (data?.course) {
             whereClause.course = data.course;
         }
-        console.log(data);
-        console.log(whereClause);
+
         try {
             const result = await this.prisma.session.findMany({
                 where: whereClause,

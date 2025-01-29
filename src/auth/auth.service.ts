@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Inject, Injectable,UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -17,17 +17,22 @@ export class AuthGaurd implements CanActivate{
         const request = context.switchToHttp().getRequest();
 
         const token = request.headers['authorization'];
+    
         if(!token){
             throw new UnauthorizedException("Invalid or missing token");
         }
+        let payload = null;
+        try {
+            payload = await this.jwtService.verifyAsync(token,{
+                secret:process.env.SECRET_KEY
+            });
+        } catch (error) {
+            throw new UnauthorizedException("Token is Expired")
+        }
 
-        const payload = await this.jwtService.verifyAsync(token,{
-            secret:process.env.SECRET_KEY
-        });
-        
+
         if(payload?.role === "admin"){
             request.role = "admin";
-            true;
         }
 
         const result = await this.databaseService.user.findUnique({
@@ -38,9 +43,14 @@ export class AuthGaurd implements CanActivate{
                 }
             }
         });
-        console.log(payload);
+        console.log(result);
         if(!result){
             throw new UnauthorizedException("Not Allowed");
+        }
+
+        if(result.role.includes('admin')){
+            request.user = result;
+            return true;
         }
         
         request.role = result.role;
@@ -64,9 +74,14 @@ export class MentorAuthGaurd implements CanActivate{
             throw new UnauthorizedException("Invalid or missing token");
         }
 
-        const payload = await this.jwtService.verifyAsync(token,{
-            secret:process.env.SECRET_KEY
-        });
+        let payload = null;
+        try {
+            payload = await this.jwtService.verifyAsync(token,{
+                secret:process.env.SECRET_KEY
+            });
+        } catch (error) {
+            throw new UnauthorizedException("Token is Expired")
+        }
 
         if(payload?.role === "admin"){
             return true;
@@ -103,9 +118,15 @@ export class emailGaurd implements CanActivate{
         if(!token){
             throw new UnauthorizedException("Invalid or missing token");
         }
-        const payload = this.jwtService.verify(token,{
-            secret:process.env.SECRET_KEY
-        });
+        
+        let payload = null;
+        try {
+            payload = await this.jwtService.verifyAsync(token,{
+                secret:process.env.SECRET_KEY
+            });
+        } catch (error) {
+            throw new UnauthorizedException("Token is Expired")
+        }
 
         if(payload.role == "admin"){
             return true;

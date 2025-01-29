@@ -14,7 +14,10 @@ import { MailModule } from './mail/mail.module';
 @Module({
   imports: [UserModule, DoubtsModule, MentorModule, AuthModule, SessionsModule,JwtModule.register({
     global:true,
-    secret:process.env.SECRET_KEY||"yourkey"
+    secret:process.env.SECRET_KEY||"yourkey",
+    signOptions:{
+      expiresIn:'24h'
+    }
   }),PrismaModule,MailModule],
   controllers: [AppController],
   providers: [AppService],

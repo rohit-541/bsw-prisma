@@ -8,7 +8,6 @@ export class doubtDTO{
 
     @IsNotEmpty()
     @IsString()
-    @Length(15)
     heading:string
 
     @IsNotEmpty()
@@ -18,7 +17,7 @@ export class doubtDTO{
     })
     course:string
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     @Length(15)
     text:string
