@@ -82,7 +82,7 @@ export class MentorController {
                 sameSite: 'strict'
             });
         
-            return res.status(200).json({ message: 'Login successfully',token:token });
+            return res.status(200).json({ message: 'Login successfully',token:token,user:result });
         } catch (error) {
             if(error instanceof NotFoundException || error instanceof UnauthorizedException){
                 throw error;

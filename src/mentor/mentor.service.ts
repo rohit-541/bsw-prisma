@@ -1,4 +1,4 @@
-import {Injectable, InternalServerErrorException, NotFoundException, UseGuards } from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException, UseGuards,UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from 'src/prisma/prisma.service';
 import otpGenerator from 'otp-generator'
@@ -53,7 +53,11 @@ export class MentorService {
             throw new NotFoundException("User not found!");
         }
 
-        return await bcrypt.compare(password,user.password);
+        if(!await bcrypt.compare(password,user.password)){
+            throw new UnauthorizedException("Invalid Credentials");
+        }
+
+        return user;
     }
 
     //addToken to user 
