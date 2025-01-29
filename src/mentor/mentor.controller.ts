@@ -249,15 +249,16 @@ export class MentorController {
 
     @Post('/forgotPassword')
     async getOTP(@Body(new ValidationPipe()) data:passDTO){
-        const email = data.kerbros+"@iitd.ac.in";
+        const kerbros = data.kerbros;
 
         try {
-            const otp = await this.mentorService.sendOTP(email);
+            const otp = await this.mentorService.sendOTP(kerbros);
             return {
                 success:true,
                 message:"OTP sent successfully"
             }
         } catch (error) {
+            console.log(error);
             throw new InternalServerErrorException("Something went wrong");
         }
     }
@@ -294,7 +295,7 @@ export class MentorController {
             sameSite: 'strict'
         });
     
-        return res.status(200).json({ message: 'OTP verified successfully' });
+        return res.status(200).json({ message: 'OTP verified successfully',token:token });
     
         } catch (error) {
         if (error instanceof HttpException) {
@@ -306,10 +307,11 @@ export class MentorController {
 
     //Update the password
     @Post('/setNew')
-    @UseGuards(emailGaurd,AuthGaurd)
+    @UseGuards(emailGaurd)
     async setNew(@Body(new ValidationPipe({whitelist:true})) password:passdto,@Req() req:any){
         try { 
-        await this.mentorService.setNewPassword(req.user.kerbrosId,password.password);
+        
+        await this.mentorService.setNewPassword(req.email,password.password);
         return {
             success:true,
             message:"Password updated successfully"
