@@ -53,7 +53,11 @@ export class MentorService {
             throw new NotFoundException("User not found!");
         }
 
-        return await bcrypt.compare(password,user.password);
+        if(!await bcrypt.compare(password,user.password)){
+            throw new UnauthorizedException("Invalid Credentials");
+        }
+
+        return user;
     }
 
     //addToken to user 
