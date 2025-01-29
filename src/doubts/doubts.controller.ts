@@ -123,7 +123,8 @@ export class DoubtsController {
     @Get('/me/')
     @UseGuards(AuthGaurd)
     async userDoubts(@Req() req:any){
-        const userId = req.user._id;
+        const userId = req.user.id;
+    
         try {
             const result = await this.doubtService.getUserDoubts(userId);
             return {

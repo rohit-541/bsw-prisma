@@ -1,4 +1,4 @@
-import {Inject, Injectable } from '@nestjs/common';
+import {Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { MailService } from 'src/mail/mail.service';
 import * as otpGenrator from 'otp-generator'
 import * as bcrypt from 'bcrypt'
@@ -91,6 +91,10 @@ export class UserService {
                 kerbrosId:kerbrosId,
             }
         });
+
+        if(!result){
+            throw new NotFoundException("User not found!");
+        }
 
         const resultCompare = await bcrypt.compare(password,result.password);
         if(!resultCompare){

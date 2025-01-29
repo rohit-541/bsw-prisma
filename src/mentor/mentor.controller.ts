@@ -6,7 +6,7 @@ import { loginDTO, otpDTO, passdto } from 'src/user/user.validation';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Roles, RolesGuard } from 'src/auth/role.gaurd';
-import { Role } from '@prisma/client';
+
 
 @Controller('mentor')
 export class MentorController {
@@ -68,20 +68,13 @@ export class MentorController {
             const token = this.jwtservice.sign({
                 kerbros:data.kerbrosId
             },{
-                secret:process.env.SECRET_KEY
+                secret:process.env.SECRET_KEY,
+                expiresIn:'1h'
             });
           
             //Add token to user list
             await this.mentorService.addToken(token,data.kerbrosId);
-                
-            // Embed token in HTTP-only cookie
-            res.cookie('loginToken', token, {
-                httpOnly: true,   // Corrected to lowercase
-                secure: false,    // Set to `true` in production with HTTPS
-                maxAge: 3600000,  // 1 hour
-                sameSite: 'strict'
-            });
-        
+                        
             return res.status(200).json({ message: 'Login successfully',token:token,user:result });
         } catch (error) {
             if(error instanceof NotFoundException || error instanceof UnauthorizedException){

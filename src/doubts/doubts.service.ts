@@ -90,6 +90,7 @@ export class DoubtsService {
     }
     //Get all user doubts
     async getUserDoubts(userId:string){
+        console.log(userId);
         const result = await this.prisma.doubts.findMany({
             where:{
                 userId:userId
