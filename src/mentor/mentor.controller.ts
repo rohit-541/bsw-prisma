@@ -33,6 +33,7 @@ export class MentorController {
                     throw new BadRequestException("User already exixts");
                 }
             }
+            console.log(error)
             throw new InternalServerErrorException("Something went wrong");
         }
     }
@@ -242,8 +243,13 @@ export class MentorController {
 
     @Post('/forgotPassword')
     async getOTP(@Body(new ValidationPipe()) data:passDTO){
+<<<<<<< HEAD
+        console.log("this is hitting")
+        const email = data.kerbros+"@iitd.ac.in";
+=======
         const kerbros = data.kerbros;
 
+>>>>>>> 037cb6336b33081c0c859bdddbd93aae0cdf100c
         try {
             const otp = await this.mentorService.sendOTP(kerbros);
             return {
@@ -251,7 +257,11 @@ export class MentorController {
                 message:"OTP sent successfully"
             }
         } catch (error) {
+<<<<<<< HEAD
+            console.log(error)
+=======
             console.log(error);
+>>>>>>> 037cb6336b33081c0c859bdddbd93aae0cdf100c
             throw new InternalServerErrorException("Something went wrong");
         }
     }
@@ -283,12 +293,16 @@ export class MentorController {
         // Embed token in HTTP-only cookie
         res.cookie('token', token, {
             httpOnly: true,   // Corrected to lowercase
-            secure: false,    // Set to `true` in production with HTTPS
+            secure: 'None',    // Set to `true` in production with HTTPS
             maxAge: 3600000,  // 1 hour
-            sameSite: 'strict'
+            sameSite: 'None'
         });
     
+<<<<<<< HEAD
+        return res.status(200).json({ message: 'OTP verified successfully', token:token });
+=======
         return res.status(200).json({ message: 'OTP verified successfully',token:token });
+>>>>>>> 037cb6336b33081c0c859bdddbd93aae0cdf100c
     
         } catch (error) {
         if (error instanceof HttpException) {
@@ -303,8 +317,13 @@ export class MentorController {
     @UseGuards(emailGaurd)
     async setNew(@Body(new ValidationPipe({whitelist:true})) password:passdto,@Req() req:any){
         try { 
+<<<<<<< HEAD
+        await this.mentorService.setNewPassword(req.user.kerbrosId,password.password);
+        console.log(JSON.stringify((req.user.kerbrosId,password.password)))
+=======
         
         await this.mentorService.setNewPassword(req.email,password.password);
+>>>>>>> 037cb6336b33081c0c859bdddbd93aae0cdf100c
         return {
             success:true,
             message:"Password updated successfully"

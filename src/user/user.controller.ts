@@ -58,10 +58,12 @@ export class UserController {
         
 
         // Embed token in HTTP-only cookie
+        console.log("object")
         res.cookie('token', token, {
           httpOnly: true,   // Corrected to lowercase
-          secure: false,    // Set to `true` in production with HTTPS
+          secure: 'None',    // Set to `true` in production with HTTPS
           maxAge: 3600000,  // 1 hour
+          sameSite: 'None'
         });
         return res.status(200).json({ message: 'OTP verified successfully',token:token });
     
