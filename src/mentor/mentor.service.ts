@@ -19,18 +19,7 @@ export class MentorService {
         const result = await this.prisma.mentor.create({
             data:data
         });
-        return {
-            id:result.id,
-            name:result.name,
-            email:result.email,
-            contact:result.contact,
-            Gender:result.Gender,
-            kerbros:result.kerbros,
-            hostel:result.hostel,
-            course:result.course,
-            hours:result.hours,
-            role:result.role,
-        };
+        return result;
     }
     
     //update mentor
