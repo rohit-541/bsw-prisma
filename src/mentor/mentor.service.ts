@@ -1,7 +1,7 @@
 import {Injectable, InternalServerErrorException, NotFoundException, UseGuards,UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from 'src/prisma/prisma.service';
-import otpGenerator from 'otp-generator'
+import * as otpGenerator from 'otp-generator'
 import { MailService } from 'src/mail/mail.service';
 import { Roles } from 'src/auth/role.gaurd';
 
