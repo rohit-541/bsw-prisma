@@ -78,6 +78,7 @@ export class MentorController {
                         
             return res.status(200).json({ message: 'Login successfully',token:token,user:result });
         } catch (error) {
+            console.log(error);
             if(error instanceof NotFoundException || error instanceof UnauthorizedException){
                 throw error;
             }

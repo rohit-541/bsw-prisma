@@ -282,7 +282,7 @@ export class MentorService {
      //forgot password 
     async setNewPassword(kerbros:string,password:string){
         const hashedPassword = await bcrypt.hash(password,12);
-        await this.prisma.user.update({
+        await this.prisma.mentor.update({
             where:{
                 kerbros:kerbros
             },

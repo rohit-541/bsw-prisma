@@ -34,6 +34,9 @@ export class AuthGaurd implements CanActivate{
         if(payload?.role === "admin"){
             request.role = "admin";
         }
+        if(!payload.kerbros){
+            throw new  UnauthorizedException("Not Allowed");
+        }
 
         const result = await this.databaseService.user.findUnique({
             where:{
@@ -43,7 +46,8 @@ export class AuthGaurd implements CanActivate{
                 }
             }
         });
-        console.log(result);
+     
+        
         if(!result){
             throw new UnauthorizedException("Not Allowed");
         }
