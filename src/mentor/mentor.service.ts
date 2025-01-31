@@ -284,7 +284,7 @@ export class MentorService {
         const hashedPassword = await bcrypt.hash(password,12);
         await this.prisma.user.update({
             where:{
-                kerbrosId:kerbros
+                kerbros:kerbros
             },
             data:{
                 password:hashedPassword
