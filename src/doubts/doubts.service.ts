@@ -117,11 +117,22 @@ export class DoubtsService {
 
     //Get doubts by course
     async doubtsBycourse(courseCode:string){
-        const result  = await this.prisma.doubts.findMany({
-            where:{
-                course:courseCode
-            }
-        });
+        const result  = await this.prisma.doubts.findMany(            {
+                select:{
+                    id:true,
+                    heading:true,
+                    text:true,
+                    imageUrl:true,
+                    status:true,
+                    user:{
+                        select:{
+                            id:true,
+                            name:true,
+                            kerbrosId:true
+                        }
+                    }
+                }
+            });
 
         return result;
     }
