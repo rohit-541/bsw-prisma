@@ -51,11 +51,6 @@ export class AuthGaurd implements CanActivate{
         if(!result){
             throw new UnauthorizedException("Not Allowed");
         }
-
-        if(result.role.includes('admin')){
-            request.user = result;
-            return true;
-        }
         
         request.role = result.role;
         request.user = result;
