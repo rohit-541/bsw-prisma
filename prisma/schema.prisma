@@ -40,13 +40,15 @@ model Doubts{
 
 model Replies{
   id            String        @id   @default(auto()) @map("_id") @db.ObjectId
-  userId        String        @db.ObjectId
+  userId        String?        @db.ObjectId
   replyText     String        
   imageUrl      String?
+  mentorId      String?       @db.ObjectId
   upVotes       Int           @default(0)
   downVotes     Int           @default(0)
 
-  User          User          @relation(fields: [userId],references: [id])
+  Mentor        Mentor?        @relation(fields: [mentorId],references: [id])
+  User          User?          @relation(fields: [userId],references: [id])
   doubtId       String        @db.ObjectId
   doubt         Doubts        @relation(fields: [doubtId],references: [id])
 }
@@ -63,8 +65,10 @@ model Mentor{
   tokens      String[]
   hostel      Hostels
   Gender      Gender
+  replyIds    String[]
   role        String          @default("Mentor")
 
+  Replies     Replies[]
   doubts      Doubts[]
   Sessions    session[]
 }

@@ -8,7 +8,7 @@ export class RepliesService {
     constructor(private prisma:PrismaService){}
 
     //create a reply
-    async createReply(data:any,userId:string){
+    async createReply(data:any,userId:string,role:String){
 
         //Verify if doubt exists
         const doubt = await this.prisma.doubts.findUnique({
@@ -21,14 +21,25 @@ export class RepliesService {
             throw new NotFoundException("Doubt with this Id not found!");
         }
 
-
-        const result = await this.prisma.replies.create({
-            data:{
-                userId:userId,
-                ...data
-            }
-        });
-        return result;
+        //Check what is the role of reply Added
+        if(role == "user"){
+            const result = await this.prisma.replies.create({
+                data:{
+                    userId:userId,
+                    ...data
+                }
+            });
+            return result;
+        }else if(role == 'Mentor'){
+            const result = await this.prisma.replies.create({
+                data:{
+                    mentorId:userId,
+                    ...data
+                }
+            });
+            return result; 
+        }
+        
     }
 
     //delete a reply
@@ -87,6 +98,13 @@ export class RepliesService {
                         id:true,
                         name:true,
                         kerbrosId:true,
+                    }
+                },
+                Mentor:{
+                    select:{
+                        id:true,
+                        name:true,
+                        kerbros:true
                     }
                 }
             }

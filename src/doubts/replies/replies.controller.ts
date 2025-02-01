@@ -14,8 +14,9 @@ export class RepliesController {
     @UseGuards(AnyAuthGuard)
     async createReply(@Body(new ValidationPipe({whitelist:true})) data:replyDTO,@Req() req:any){
         const userId = req.user.id;
+        const role = req.user.role;
         try {
-            const result = await this.replyService.createReply(data,userId);
+            const result = await this.replyService.createReply(data,userId,role);
             return {
                 success:true,
                 reply:result
