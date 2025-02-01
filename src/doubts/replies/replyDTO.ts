@@ -17,3 +17,9 @@ export class updateReplyDto{
     @IsString()
     replyText:string
 }
+
+export class doubtId{
+    @IsNotEmpty()
+    @IsString()
+    doubtId:string
+}

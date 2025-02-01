@@ -23,6 +23,12 @@ export class DoubtsService {
                 id:doubtId
             }
         });
+
+        await this.prisma.replies.deleteMany({
+            where:{
+                doubtId:doubtId
+            }
+        });
     }
 
     //update a doubt
