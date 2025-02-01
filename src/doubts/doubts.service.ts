@@ -23,6 +23,12 @@ export class DoubtsService {
                 id:doubtId
             }
         });
+
+        await this.prisma.replies.deleteMany({
+            where:{
+                doubtId:doubtId
+            }
+        });
     }
 
     //update a doubt
@@ -95,8 +101,10 @@ export class DoubtsService {
     //Get all user doubts
     async getUserDoubts(userId:string){
         console.log(userId);
-        const result = await this.prisma.doubts.findMany(            {
-                select:{
+        const result = await this.prisma.doubts.findMany(  
+            { where:{
+                userId:userId
+            },select:{
                     id:true,
                     heading:true,
                     text:true,
@@ -117,8 +125,10 @@ export class DoubtsService {
 
     //Get doubts by course
     async doubtsBycourse(courseCode:string){
-        const result  = await this.prisma.doubts.findMany(            {
-                select:{
+        const result  = await this.prisma.doubts.findMany({
+            where:{
+                course:courseCode
+            },select:{
                     id:true,
                     heading:true,
                     text:true,

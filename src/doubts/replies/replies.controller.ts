@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, HttpException, InternalServerErrorException, Param, Post, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, Param, Post, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AnyAuthGuard, AuthGaurd } from 'src/auth/auth.service';
 import { replyDTO, updateReplyDto } from './replyDTO';
 import { RepliesService } from './replies.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Controller('replies')
 export class RepliesController {
@@ -87,7 +88,11 @@ export class RepliesController {
                 Replies:result
             }
         } catch (error) {
-            console.log(error)
+            if(error instanceof PrismaClientKnownRequestError){
+                if(error.code ==  "P2023"){
+                    throw new BadRequestException("Invalid Id Provided");
+                }
+            }
             throw new InternalServerErrorException("Something went wrong");
         }
     }
