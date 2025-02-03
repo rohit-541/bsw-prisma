@@ -189,11 +189,14 @@ export class MentorService {
                 id:mentorId
             },
             select:{
+                id:true,
                 name:true,
                 kerbros:true,
                 email:true,
                 contact:true,
-                course:true
+                course:true,
+                hostel:true,
+                Gender:true
             }
         });
 
