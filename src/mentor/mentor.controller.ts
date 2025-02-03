@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, Res, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, Post, Put, Req, Res, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { id, mentorDTO, passDTO, time, UpdateMentorDTO } from './mentor.validation';
 import { MentorService } from './mentor.service';
 import { AuthGaurd, emailGaurd, MentorAuthGaurd } from 'src/auth/auth.service';
@@ -6,6 +6,9 @@ import { loginDTO, otpDTO, passdto } from 'src/user/user.validation';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Roles, RolesGuard } from 'src/auth/role.gaurd';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { diskOptions } from './multer.config';
 
 
 @Controller('mentor')
@@ -331,9 +334,10 @@ export class MentorController {
         }
     }
 
-    
-    async uploadPhoto(){
-
+    @Post('/upload/file')
+    @UseInterceptors(FileInterceptor('image',diskOptions))
+    async uploadPhoto(@UploadedFile() image:Express.Multer.File){
+        console.log(image.filename);
     }
 
 

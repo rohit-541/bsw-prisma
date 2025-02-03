@@ -85,6 +85,10 @@ export class UpdateMentorDTO{
   @IsOptional()
   hostel:string
 
+  @IsOptional()
+  @IsEnum(Gender)
+  Gender:string
+
 }
 
 export class time{
