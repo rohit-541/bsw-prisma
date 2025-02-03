@@ -332,5 +332,10 @@ export class MentorController {
     }
 
     
+    async uploadPhoto(){
+
+    }
+
+
 
 }

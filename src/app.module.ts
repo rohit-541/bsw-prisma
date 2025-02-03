@@ -9,6 +9,7 @@ import { SessionsModule } from './sessions/sessions.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './mail/mail.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 
 @Module({
@@ -18,6 +19,8 @@ import { MailModule } from './mail/mail.module';
     signOptions:{
       expiresIn:'24h'
     }
+  }),MulterModule.register({
+    dest:'/public/uploads'
   }),PrismaModule,MailModule],
   controllers: [AppController],
   providers: [AppService],

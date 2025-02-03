@@ -67,6 +67,7 @@ model Mentor{
   Gender      Gender
   replyIds    String[]
   role        String          @default("Mentor")
+  cluster     Int            
 
   Replies     Replies[]
   doubts      Doubts[]

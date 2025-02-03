@@ -1,5 +1,5 @@
 import { Gender, Hostels } from "@prisma/client";
-import { IsEmail, IsEnum, isHexadecimal, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches, Min } from "class-validator"
+import { IsEmail, IsEnum, isHexadecimal, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches, Max, Min } from "class-validator"
 
 export class mentorDTO{
     @IsNotEmpty()
@@ -50,6 +50,13 @@ export class mentorDTO{
     @IsEnum(Hostels)
     @IsNotEmpty()
     hostel:string
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Min(1)
+    @Max(4)
+    cluster:number
+
 }
 
 export class UpdateMentorDTO{
@@ -62,6 +69,13 @@ export class UpdateMentorDTO{
   @IsOptional()
   @IsString()
   email:string
+
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(4)
+  cluster:number
 
   @IsNumber()
   @IsOptional()

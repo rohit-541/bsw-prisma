@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as otpGenerator from 'otp-generator'
 import { MailService } from 'src/mail/mail.service';
 import { Roles } from 'src/auth/role.gaurd';
+import cluster from 'cluster';
 
 @Injectable()
 export class MentorService {
@@ -46,6 +47,7 @@ export class MentorService {
                 name:true,
                 contact:true,
                 email:true,
+                cluster:true
             }
         });
 
@@ -79,6 +81,7 @@ export class MentorService {
             course:user.course,
             hours:user.hours,
             role:user.role,
+            cluster:user.cluster
         };
     }
 
@@ -196,7 +199,8 @@ export class MentorService {
                 contact:true,
                 course:true,
                 hostel:true,
-                Gender:true
+                Gender:true,
+                cluster:true
             }
         });
 
@@ -215,7 +219,9 @@ export class MentorService {
                 email:true,
                 contact:true,
                 hours:true,
-                kerbros:true
+                kerbros:true,
+                cluster:true,
+                Gender:true,
             }
         });
 
@@ -309,11 +315,14 @@ export class MentorService {
                     contact:true,
                     hostel:true,
                     kerbros:true,
-                    Gender:true
+                    Gender:true,
+                    cluster:true
                 }
             }
         );
 
         return result;
     }
+
+
 }
