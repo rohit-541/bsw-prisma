@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-
+import * as fs from 'fs'
+import { join } from 'path';
 
 @Injectable()
 export class DoubtsService {
@@ -146,4 +147,70 @@ export class DoubtsService {
 
         return result;
     }
+
+    //DeleteFile
+    deleteFile(imageUrl:string){
+        //delete the image
+        const pathImage = join(__dirname,"..","..","..",'public',imageUrl);
+        fs.unlink(pathImage,(err)=>{
+            if(err){
+                console.log(err);
+            }
+        });
+    }
+
+
+    //Upload image to doubt
+    async updateImage(doubtId:string,userId:string,imageUrl:string){
+        //Get the doubt
+        const doubtObj = await this.prisma.doubts.findUnique({
+            where:{
+                id:doubtId
+            }
+        });
+
+       //if doubt not found
+       if(!doubtObj){
+            this.deleteFile(imageUrl);
+            throw new NotFoundException("Doubt not found!");
+       }
+
+       //validation
+       if(doubtObj.userId != userId){
+            this.deleteFile(imageUrl);
+            throw new UnauthorizedException("You not allowed to update other's doubt");
+       }
+
+       if(doubtObj.imageUrl){
+         //delete the image 
+            this.deleteFile(doubtObj.imageUrl);
+       }
+
+       const result = await this.prisma.doubts.update({
+            where:{
+                id:doubtId
+            },
+            data:{
+                imageUrl:imageUrl
+            },
+            select:{
+                id:true,
+                heading:true,
+                text:true,
+                imageUrl:true,
+                status:true,
+                user:{
+                    select:{
+                        id:true,
+                        name:true,
+                        kerbrosId:true
+                    }
+                } 
+            }
+       });
+
+       return result;
+    }
+
+
 }
