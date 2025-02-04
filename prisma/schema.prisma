@@ -64,6 +64,7 @@ model Mentor{
   course      String           
   tokens      String[]
   hostel      Hostels
+  ImageUrl    String?          
   Gender      Gender
   replyIds    String[]
   role        String          @default("Mentor")

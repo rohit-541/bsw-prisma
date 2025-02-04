@@ -5,6 +5,9 @@ import * as otpGenerator from 'otp-generator'
 import { MailService } from 'src/mail/mail.service';
 import { Roles } from 'src/auth/role.gaurd';
 import cluster from 'cluster';
+import { id } from './mentor.validation';
+import { join } from 'path';
+import * as fs from 'fs'
 
 @Injectable()
 export class MentorService {
@@ -324,5 +327,55 @@ export class MentorService {
         return result;
     }
 
+
+    async addImage(mentorId:string,ImageUrl:string){
+
+        const mentor = await this.prisma.mentor.findUnique({
+            where:{
+                id:mentorId
+            }
+        });
+
+        if(!mentor){
+            throw new NotFoundException("Mentor not found!");
+        }
+
+        //If there is image present currently
+        if(mentor.ImageUrl){
+            //delete the image
+            const pathImage = join(__dirname,"..","..","..",'public',mentor.ImageUrl);
+            console.log(pathImage);
+            fs.unlink(pathImage,(err)=>{
+                if(err){
+                    console.log(err);
+                }
+            });
+        }
+
+        const result = await this.prisma.mentor.update({
+            where:{
+                id:mentorId
+            },
+            data:{
+                ImageUrl:ImageUrl
+            },
+            select:{
+                id:true,
+                name:true,
+                hostel:true,
+                email:true,
+                contact:true,
+                kerbros:true,
+                ImageUrl:true,
+                Gender:true,
+                course:true,
+                hours:true,
+                role:true,
+                cluster:true
+            }
+        });
+
+        return result;
+    }
 
 }

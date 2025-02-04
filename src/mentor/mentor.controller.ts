@@ -9,6 +9,7 @@ import { Roles, RolesGuard } from 'src/auth/role.gaurd';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { diskOptions } from './multer.config';
+import { join } from 'path';
 
 
 @Controller('mentor')
@@ -334,10 +335,44 @@ export class MentorController {
         }
     }
 
-    @Post('/upload/file')
+    @Post('/image')
     @UseInterceptors(FileInterceptor('image',diskOptions))
-    async uploadPhoto(@UploadedFile() image:Express.Multer.File){
-        console.log(image.filename);
+    @UseGuards(MentorAuthGaurd)
+    async uploadPhoto(@UploadedFile() image:Express.Multer.File,@Req() req:any){
+
+        //If mentor Id is not provided
+        const mentorId = req.user.id;
+        if(!mentorId){
+            throw new BadRequestException("Mentor Id is missing or invalid");
+        }
+
+        const imageUrl = join('uploads',image.filename);
+        try {
+            //Update the image
+            const result = await this.mentorService.addImage(mentorId,imageUrl);
+
+            return {
+                success:true,
+                message:"Images updated Successfully",
+                mentor:result
+            }
+        } catch (error) {
+            console.log(error);
+            //If error is thrown by internal module throw it directly
+            if(error instanceof HttpException){
+                throw error;
+            }
+
+            if(error instanceof PrismaClientKnownRequestError){
+                if(error.code =="P2002"){
+                    throw new BadRequestException("Invalid Id Provided");
+                }
+                if(error.code =="P2023"){
+                    throw new NotFoundException("Mentor not found");
+                }
+            }
+            throw new InternalServerErrorException("Something went wrong");
+        }
     }
 
 
