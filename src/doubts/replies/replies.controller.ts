@@ -1,8 +1,10 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, Param, Post, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { AnyAuthGuard, AuthGaurd } from 'src/auth/auth.service';
 import { replyDTO, updateReplyDto } from './replyDTO';
 import { RepliesService } from './replies.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskOptions } from 'src/mentor/multer.config';
 
 @Controller('replies')
 export class RepliesController {
@@ -12,9 +14,25 @@ export class RepliesController {
     //create a reply
     @Post('/')
     @UseGuards(AnyAuthGuard)
-    async createReply(@Body(new ValidationPipe({whitelist:true})) data:replyDTO,@Req() req:any){
+    @UseInterceptors(FileInterceptor('image',diskOptions))
+    async createReply(@UploadedFile() image:Express.Multer.File,@Body(new ValidationPipe({whitelist:true})) data:replyDTO,@Req() req:any){
         const userId = req.user.id;
         const role = req.user.role;
+
+        if(image && image.size >= 10000000){
+            this.replyService.deleteFile(`uploads/${image.filename}`);
+            throw new BadRequestException("File size cannot be greater than 10mb");
+        }
+
+        if(image  && !image?.mimetype.startsWith('image/')){
+            this.replyService.deleteFile(`uploads/${image.filename}`);
+            throw new BadRequestException("File should be of Image type");
+        }
+
+        if(image){
+            data.imageUrl = `uploads/${image.filename}`;
+        }
+
         try {
             const result = await this.replyService.createReply(data,userId,role);
             return {
@@ -58,7 +76,22 @@ export class RepliesController {
     //update a reply
     @Put('/:id')
     @UseGuards(AnyAuthGuard)
-    async updateReply(@Req() req:any,@Body(new ValidationPipe({whitelist:true})) data:updateReplyDto,@Param('id') id:string){
+    @UseInterceptors(FileInterceptor('image',diskOptions))
+    async updateReply(@UploadedFile() image:Express.Multer.File,@Req() req:any,@Body(new ValidationPipe({whitelist:true})) data:updateReplyDto,@Param('id') id:string){
+
+        if(image && image.size >= 10000000){
+            this.replyService.deleteFile(`uploads/${image.filename}`);
+            throw new BadRequestException("File size cannot be greater than 10mb");
+        }
+
+        if(image  && !image?.mimetype.startsWith('image/')){
+            this.replyService.deleteFile(`uploads/${image.filename}`);
+            throw new BadRequestException("File should be of Image type");
+        }
+
+        if(image){
+            data.imageUrl = `uploads/${image.filename}`;
+        }
 
         //Only user who posted it is able to update it
         const userId = req.user.id;

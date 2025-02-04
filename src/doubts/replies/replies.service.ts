@@ -1,4 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { unlink } from 'fs';
+import { join } from 'path';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 
@@ -41,6 +43,18 @@ export class RepliesService {
         }
         
     }
+
+    //DeleteFile
+    deleteFile(imageUrl:string){
+        //delete the image
+        const pathImage = join(__dirname,"..","..","..",'public',imageUrl);
+        unlink(pathImage,(err)=>{
+            if(err){
+                console.log(err);
+            }
+        });
+    }   
+
 
     //delete a reply
     async deleteReply(replyId:string,userId:string){

@@ -10,12 +10,22 @@ export class replyDTO{
     @IsString()
     @IsNotEmpty()
     doubtId:string
+
+    @IsOptional()
+    @IsString()
+    imageUrl:string
+
 }
 
 export class updateReplyDto{
     @IsOptional()
     @IsString()
     replyText:string
+
+    @IsOptional()
+    @IsString()
+    imageUrl:string
+    
 }
 
 export class doubtId{
