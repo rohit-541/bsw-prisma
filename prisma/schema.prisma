@@ -72,7 +72,8 @@ model Mentor{
 
   Replies     Replies[]
   doubts      Doubts[]
-  Sessions    session[]
+  Sessions1   session[]       @relation("mentor1")
+  Sessions2   session[]       @relation("mentor2")
 }
 
 model Otps{
@@ -86,13 +87,15 @@ model Otps{
 model session{
   id          String          @id  @default(auto()) @map("_id") @db.ObjectId
   course      String
-  mentorId    String          @db.ObjectId
+  mentorId1   String          @db.ObjectId
+  mentorId2   String          @db.ObjectId
   startTime   DateTime        @default(now())
   endTime     DateTime        
   joinLink    String?       
   assets      String?
 
-  mentor      Mentor          @relation(fields: [mentorId],references: [id])
+  mentor1     Mentor          @relation("mentor1",fields: [mentorId1],references: [id])
+  mentor2     Mentor          @relation("mentor2",fields: [mentorId2],references: [id])
 }
 
 enum status{

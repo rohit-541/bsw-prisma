@@ -1,4 +1,4 @@
-import { IsDataURI, IsDateString, IsNotEmpty, IsOptional, IsString, IsUrl, Length, Matches } from "class-validator"
+import { IsDataURI, IsDateString, isNotEmpty, IsNotEmpty, IsOptional, IsString, IsUrl, Length, Matches } from "class-validator"
 
 export class sessionDTO{
     @IsString()
@@ -8,9 +8,15 @@ export class sessionDTO{
     @IsNotEmpty()
     course:string
 
+    @IsNotEmpty()
     @IsString()
     @Length(24)
-    mentorId:string
+    mentorId1:string
+    
+    @IsNotEmpty()
+    @IsString()
+    @Length(24)
+    mentorId2:string
 
     @IsDateString()
     @IsNotEmpty()
@@ -37,9 +43,15 @@ export class updateData{
     @IsOptional()
     course:string
 
+    @IsOptional()
     @IsString()
     @Length(24)
-    mentorId:string
+    mentorId1:string
+    
+    @IsOptional()
+    @IsString()
+    @Length(24)
+    mentorId2:string
 
     @IsDateString()
     @IsOptional()

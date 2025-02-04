@@ -49,7 +49,16 @@ export class SessionsService {
                 endTime:true,
                 joinLink:true,
                 assets:true,
-                mentor:{
+                mentor1:{
+                    select:{
+                        id:true,
+                        name:true,
+                        contact:true,
+                        email:true,
+                        hostel:true
+                    }
+                },
+                mentor2:{
                     select:{
                         id:true,
                         name:true,
@@ -78,8 +87,18 @@ export class SessionsService {
             endTime:true,
             joinLink:true,
             assets:true,
-            mentor:{
+            mentor1:{
                 select:{
+                    id:true,
+                    name:true,
+                    contact:true,
+                    email:true,
+                    hostel:true
+                }
+            },
+            mentor2:{
+                select:{
+                    id:true,
                     name:true,
                     contact:true,
                     email:true,
@@ -109,8 +128,18 @@ export class SessionsService {
             endTime:true,
             joinLink:true,
             assets:true,
-            mentor:{
+            mentor1:{
                 select:{
+                    id:true,
+                    name:true,
+                    contact:true,
+                    email:true,
+                    hostel:true
+                }
+            },
+            mentor2:{
+                select:{
+                    id:true,
                     name:true,
                     contact:true,
                     email:true,
@@ -137,8 +166,18 @@ export class SessionsService {
             endTime:true,
             joinLink:true,
             assets:true,
-            mentor:{
+            mentor1:{
                 select:{
+                    id:true,
+                    name:true,
+                    contact:true,
+                    email:true,
+                    hostel:true
+                }
+            },
+            mentor2:{
+                select:{
+                    id:true,
                     name:true,
                     contact:true,
                     email:true,
@@ -155,7 +194,10 @@ export class SessionsService {
     async filterSessions(data: filter) {
         const whereClause: any = {};
         if (data?.mentorId) {
-            whereClause.mentorId = data.mentorId;
+            whereClause.OR = [
+                {mentorId1:data.mentorId},
+                {mentorId2:data.mentorId}
+            ]
         }
         if (data?.course) {
             whereClause.course = data.course;
@@ -163,7 +205,7 @@ export class SessionsService {
 
         try {
             const result = await this.prisma.session.findMany({
-                where: whereClause,
+                where:whereClause
             });
             return result;
         } catch (error) {
