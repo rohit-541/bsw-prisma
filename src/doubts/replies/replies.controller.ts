@@ -5,6 +5,7 @@ import { RepliesService } from './replies.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskOptions } from 'src/mentor/multer.config';
+import { error } from 'console';
 
 @Controller('replies')
 export class RepliesController {
