@@ -120,7 +120,8 @@ export class RepliesService {
                         name:true,
                         kerbros:true
                     }
-                }
+                },
+                imageUrl:true,
             }
         });
         return result;
