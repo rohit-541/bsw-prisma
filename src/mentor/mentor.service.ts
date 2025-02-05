@@ -34,6 +34,7 @@ export class MentorService {
             course:result.course,
             hours:result.hours,
             role:result.role,
+            imageUrl:result.ImageUrl
         };
     }
     
@@ -84,7 +85,8 @@ export class MentorService {
             course:user.course,
             hours:user.hours,
             role:user.role,
-            cluster:user.cluster
+            cluster:user.cluster,
+            ImageUrl:user.ImageUrl
         };
     }
 
@@ -203,7 +205,8 @@ export class MentorService {
                 course:true,
                 hostel:true,
                 Gender:true,
-                cluster:true
+                cluster:true,
+                ImageUrl:true,
             }
         });
 
@@ -225,6 +228,7 @@ export class MentorService {
                 kerbros:true,
                 cluster:true,
                 Gender:true,
+                ImageUrl:true,
             }
         });
 
@@ -319,7 +323,8 @@ export class MentorService {
                     hostel:true,
                     kerbros:true,
                     Gender:true,
-                    cluster:true
+                    cluster:true,
+                    ImageUrl:true
                 }
             }
         );
