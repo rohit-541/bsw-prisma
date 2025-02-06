@@ -230,5 +230,40 @@ export class SessionsService {
 
         return result;
     }
+
+    async addAssest(sessionId:string,assestLink:string){
+        const result = await this.prisma.session.update({
+            where:{
+                id:sessionId
+            },
+            data:{
+                assets:assestLink
+            },
+            include:{
+                mentor1:{
+                    select:{
+                        id:true,
+                        name:true,
+                        email:true,
+                        kerbros:true,
+                        contact:true,
+                        ImageUrl:true
+                    }
+                },
+                mentor2:{
+                    select:{
+                        id:true,
+                        name:true,
+                        email:true,
+                        kerbros:true,
+                        contact:true,
+                        ImageUrl:true
+                    }
+                }
+            }
+        });
+
+        return result;
+    }
     
 }

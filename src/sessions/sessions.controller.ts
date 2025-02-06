@@ -188,4 +188,25 @@ export class SessionsController {
             throw new InternalServerErrorException("Something went wrong");
         }
     }
+
+
+    @Put('/assests/:id')
+    async addAssestLink(@Param('id') id:string,@Body('assestLink') link:Url){
+        try {
+            const result = await this.addAssestLink(id,link);
+            return {
+                success:true,
+                session:result
+            }
+        } catch (error) {
+
+            if(error instanceof PrismaClientKnownRequestError){
+                if(error.code == "P2023"){
+                    throw new BadRequestException("Invalid Id Provided");
+                }
+            }
+
+            throw new InternalServerErrorException("Something went wrong");
+        }
+    }
 }   
