@@ -44,6 +44,7 @@ export class SessionsService {
                 id:sessionId
             },
             select:{
+                id:true,
                 course:true,
                 startTime:true,
                 endTime:true,
@@ -123,6 +124,7 @@ export class SessionsService {
             }
         },
         select:{
+            id:true,
             course:true,
             startTime:true,
             endTime:true,
@@ -161,6 +163,7 @@ export class SessionsService {
             }
         },
         select:{
+            id:true,
             course:true,
             startTime:true,
             endTime:true,
