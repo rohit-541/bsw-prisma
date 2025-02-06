@@ -85,6 +85,7 @@ export class DoubtsService {
                     text:true,
                     imageUrl:true,
                     status:true,
+                    course:true,
                     user:{
                         select:{
                             id:true,

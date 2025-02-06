@@ -107,6 +107,8 @@ export class UserService {
             hostel:result.hostel,
             kerbrosId:result.kerbrosId,
             role:result.role,
+            Gender:result.Gender,
+            avatar:result.avatar,
         };
     }
 
