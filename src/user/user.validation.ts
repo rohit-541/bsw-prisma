@@ -34,8 +34,8 @@ export class userDTO{
 
   @IsNotEmpty()
   @IsString()
-  @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{12,64}$/,{
-    message:"Password should be atleast 12 character string with one upperCase ,one lowerCase,one Digit and one specialCharacter"
+  @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,64}$/,{
+    message:"Password should be atleast 8 character string with one upperCase ,one lowerCase,one Digit and one specialCharacter"
   })
   password:string
 
