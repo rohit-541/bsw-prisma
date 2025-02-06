@@ -7,7 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Roles, RolesGuard } from 'src/auth/role.gaurd';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { diskOptions } from './multer.config';
 import { join } from 'path';
 
@@ -104,13 +103,6 @@ export class MentorController {
             //check delete this token
         const result = await this.mentorService.removeToken(req.user.kerbros,token);
         
-        
-        res.clearCookie('loginToken', {
-            httpOnly: true,  // Corrected capitalization
-            secure: false,   // Set to `true` in production with HTTPS
-            sameSite: 'strict',
-        });
-        
         return res.status(200).json({ message: 'Logout successful' });
         } catch (error) {
         console.log(error);
@@ -125,11 +117,6 @@ export class MentorController {
 
         try {
         await this.mentorService.removeallTokens(req.user.kerbros);
-        res.clearCookie('loginToken', {
-            httpOnly: true,  // Corrected capitalization
-            secure: false,   // Set to `true` in production with HTTPS
-            sameSite: 'strict',
-        });
     
         return res.status(200).json({ message: 'Logout successful' });
         } catch (error) {
@@ -145,14 +132,6 @@ export class MentorController {
     async deleteMentor(@Param('id',new ValidationPipe({whitelist:true})) id:id,@Res() res:any){
         try {
             await this.mentorService.deleteMentor(id);
-
-            //Logout from all device
-            res.clearCookie('loginToken', {
-                httpOnly: true,  // Corrected capitalization
-                secure: false,   // Set to `true` in production with HTTPS
-                sameSite: 'strict',
-            });
-
             res.status(200).send({
                 success:true,
                 message:"Mentor Deleted Successfully"

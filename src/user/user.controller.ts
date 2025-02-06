@@ -56,15 +56,6 @@ export class UserController {
           }
         );
         
-
-        // Embed token in HTTP-only cookie
-        console.log("object")
-        res.cookie('token', token, {
-          httpOnly: true,   // Corrected to lowercase
-          secure: 'None',    // Set to `true` in production with HTTPS
-          maxAge: 3600000,  // 1 hour
-          sameSite: 'None'
-        });
         return res.status(200).json({ message: 'OTP verified successfully',token:token });
     
       } catch (error) {
@@ -196,14 +187,7 @@ export class UserController {
       }
       try {
          //check delete this token
-        const result = await this.userService.removeToken(req.user.kerbrosId,token);
-      
-      
-        res.clearCookie('loginToken', {
-          httpOnly: true,  // Corrected capitalization
-          secure: false,   // Set to `true` in production with HTTPS
-          sameSite: 'strict',
-        });
+        await this.userService.removeToken(req.user.kerbrosId,token);
       
         return res.status(200).json({ message: 'Logout successful' });
       } catch (error) {
@@ -219,11 +203,6 @@ export class UserController {
 
       try {
         await this.userService.removeallTokens(req.user.kerbrosId);
-        res.clearCookie('loginToken', {
-          httpOnly: true,  // Corrected capitalization
-          secure: false,   // Set to `true` in production with HTTPS
-          sameSite: 'strict',
-        });
     
       return res.status(200).json({ message: 'Logout successful' });
       } catch (error) {

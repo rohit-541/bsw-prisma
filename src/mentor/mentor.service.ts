@@ -108,7 +108,7 @@ export class MentorService {
 
     //delete mentor
     async deleteMentor(mentorId:any){
-        const result = await this.prisma.mentor.delete({
+        await this.prisma.mentor.delete({
             where:{
                 id:mentorId
             }
