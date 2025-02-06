@@ -118,7 +118,8 @@ export class DoubtsService {
                             name:true,
                             kerbrosId:true
                         }
-                    }
+                    },
+                    course:true,
                 }
             });
 
