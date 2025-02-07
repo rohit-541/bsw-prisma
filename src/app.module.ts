@@ -10,10 +10,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './mail/mail.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { ConfigModule } from '@nestjs/config';
 
 
 @Module({
-  imports: [UserModule, DoubtsModule, MentorModule, AuthModule, SessionsModule,JwtModule.register({
+  imports: [ConfigModule.forRoot(),UserModule, DoubtsModule, MentorModule, AuthModule, SessionsModule,JwtModule.register({
     global:true,
     secret:process.env.SECRET_KEY||"yourkey",
     signOptions:{
