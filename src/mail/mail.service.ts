@@ -18,13 +18,19 @@ export class MailService {
     });
     
     async sendMail(to:string,subject:string,text:string,htmlString?:string){
-        this.transport.sendMail({
-            from:process.env.email,
-            to:to,
-            subject:subject,
-            text:text,
-            html:htmlString
-        });
+        try {
+            this.transport.sendMail({
+                from:process.env.email,
+                to:to,
+                subject:subject,
+                text:text,
+                html:htmlString
+            }); 
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+        
     }
 
 
