@@ -5,10 +5,15 @@ import * as nodemailer from 'nodemailer'
 export class MailService {
     //create a transport    
     private transport = nodemailer.createTransport({
-        service:'gmail',
+        host:'smpt.iitd.ac.in',
+        port:465,
+        secure:false,
         auth:{
             user:process.env.email,
             pass:process.env.email_password
+        },
+        tls: {
+            rejectUnauthorized: false  // May be required if IITD's SSL cert is self-signed
         }
     });
     
