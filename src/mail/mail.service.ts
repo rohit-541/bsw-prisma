@@ -5,7 +5,7 @@ import * as nodemailer from 'nodemailer'
 export class MailService {
     //create a transport    
     private transport = nodemailer.createTransport({
-        host:'smpt.iitd.ac.in',
+        host:'smtp.iitd.ac.in',
         port:465,
         secure:false,
         auth:{
