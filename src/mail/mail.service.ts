@@ -6,8 +6,8 @@ export class MailService {
     //create a transport    
     private transport = nodemailer.createTransport({
         host:'smtp.iitd.ac.in',
-        port:587,
-        secure:false,
+        port:465,
+        secure:true,
         auth:{
             user:process.env.email,
             pass:process.env.email_password
